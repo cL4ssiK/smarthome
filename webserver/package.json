@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "docker compose up -d server",
-    "devstart": "docker compose up -d server && docker logs -f serverContainer",
+    "start": "docker compose up -d",
+    "devstart": "docker compose up -d && docker logs -f serverContainer",
     "stop": "docker compose down",
     "build": "docker compose build",
     "build:server": "docker compose build server"
