@@ -47,8 +47,21 @@ wss.on("connection", (socket, req) => {
 
 //============================ Rest API ===================================
 
-app.get('/', (req, res) => {
-  res.send("Sup!");
+app.get('/api/devices', (req, res) => {
+  const deviceArray = [];
+  for (const [id, device] of devices) {
+    const funcs = [];
+    for (const key in device.functions) {
+      funcs.push(device.functions[key]);
+    }
+    deviceArray.push({
+      id: id,
+      name: device.name,
+      functions: funcs,
+      active: device.active,
+    });
+  }
+  res.json(deviceArray);
 });
 
 /**
@@ -62,15 +75,6 @@ app.post('/api/turnon', (req, res) => {
     console.log(device_id);
     device.send_command("on");
   }
-  res.send("ok");
-});
-
-app.post('/api/kokeilu', (req, res) => {
-  const device = devices.get("esp32-001");
-  console.log(device);
-  const obj = req.body;
-  device.send_message(obj);
-  console.log("message sent!")
   res.send("ok");
 });
 
