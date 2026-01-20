@@ -1,0 +1,16 @@
+<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>560</x><y>290</y><w>100</w><h>30</h></coordinates><panel_attributes>Mobile app</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>750</x><y>290</y><w>100</w><h>30</h></coordinates><panel_attributes>Web app</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>650</x><y>430</y><w>100</w><h>30</h></coordinates><panel_attributes>Server</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>600</x><y>310</y><w>110</w><h>140</h></coordinates><panel_attributes>lt=-&gt;
+HTTP
+(rest)</panel_attributes><additional_attributes>10;10;90;120</additional_attributes></element><element><id>Relation</id><coordinates><x>710</x><y>310</y><w>110</w><h>140</h></coordinates><panel_attributes>lt=-&gt;
+HTTP
+(rest)</panel_attributes><additional_attributes>90;10;10;120</additional_attributes></element><element><id>UMLClass</id><coordinates><x>500</x><y>590</y><w>100</w><h>30</h></coordinates><panel_attributes>ESP32
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>540</x><y>450</y><w>160</w><h>160</h></coordinates><panel_attributes>lt=&lt;-&gt;
+Web socket
+(push)</panel_attributes><additional_attributes>140;10;10;140</additional_attributes></element><element><id>UMLClass</id><coordinates><x>640</x><y>640</y><w>100</w><h>30</h></coordinates><panel_attributes>ESP32</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>780</x><y>590</y><w>100</w><h>30</h></coordinates><panel_attributes>ESP32</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>690</x><y>450</y><w>30</w><h>210</h></coordinates><panel_attributes>lt=&lt;-&gt;
+</panel_attributes><additional_attributes>10;10;10;190</additional_attributes></element><element><id>Relation</id><coordinates><x>730</x><y>450</y><w>120</w><h>160</h></coordinates><panel_attributes>lt=&lt;-&gt;
+</panel_attributes><additional_attributes>10;10;100;140</additional_attributes></element><element><id>Text</id><coordinates><x>610</x><y>190</y><w>180</w><h>40</h></coordinates><panel_attributes>Project architecture
+fontsize=18
+
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>350</x><y>430</y><w>100</w><h>30</h></coordinates><panel_attributes>Database</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>440</x><y>430</y><w>230</w><h>50</h></coordinates><panel_attributes>lt=&lt;-
+Database client protocol
+(pull)</panel_attributes><additional_attributes>10;20;210;20</additional_attributes></element></diagram>
