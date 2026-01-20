@@ -1,11 +1,11 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
 
 export const DeviceContext = createContext(null);
 
 export function DeviceProvider({ children }) {
 
   /**
-   * Devices are type:
+   * Devices are of type:
    * {
    *    id: "xxxx",
    *    name: "coffeemaker",
@@ -15,6 +15,26 @@ export function DeviceProvider({ children }) {
    * }
    */
     const [devices, setDevices] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchDevices = async () => {
+          try {
+            const res = await fetch('/api/devices'); // replace with your endpoint
+            if (!res.ok) throw new Error('Failed to fetch devices');
+            const data = await res.json();
+            console.log("devices", data);
+            setDevices(data);
+          } catch (err) {
+            setError(err.message);
+          } finally {
+            setLoading(false);
+          }
+        };
+
+        fetchDevices();
+    }, []);
 
     const addDevice = (device) => {
         setDevices(prevDevices => [...prevDevices, device]);
@@ -51,7 +71,7 @@ export function DeviceProvider({ children }) {
     }
 
   return (
-    <DeviceContext.Provider value={{ devices, addDevice, removeDevice, toggleDeviceState, toggleDeviceFunctionState, changeDeviceName }}>
+    <DeviceContext.Provider value={{ devices, loading, error, addDevice, removeDevice, toggleDeviceState, toggleDeviceFunctionState, changeDeviceName }}>
       {children}
     </DeviceContext.Provider>
   );
