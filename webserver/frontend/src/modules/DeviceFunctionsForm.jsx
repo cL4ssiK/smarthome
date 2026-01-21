@@ -24,7 +24,7 @@ function DeviceFunctionsForm({ device, toggleDeviceFunctionState}) {
   return (
         <div key={device.id}>
           {device.functions.map(func => (
-            <button onClick={() => handleClick(func.code)}>{func.name}</button>
+            <button key={func.code} onClick={() => handleClick(func.code)}>{func.name}</button>
           ))}
         </div>
   );
