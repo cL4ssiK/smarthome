@@ -24,10 +24,6 @@ function App() {
     <DeviceProvider>
       <div className="App">
         <header className="App-header">
-          <form onSubmit={handleSubmit}>
-            <input type="hidden" name="key" value="value"></input>
-            <input type="submit" value="Send Request" />
-          </form>
         </header>
         <DeviceList>
         </DeviceList>
