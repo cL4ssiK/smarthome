@@ -1,5 +1,6 @@
 import './App.css';
 import { DeviceProvider } from './context/DeviceContext';
+import { DeviceList } from './modules/DeviceList';
 
 function App() {
 
@@ -28,6 +29,8 @@ function App() {
             <input type="submit" value="Send Request" />
           </form>
         </header>
+        <DeviceList>
+        </DeviceList>
       </div>
     </DeviceProvider>
   );
