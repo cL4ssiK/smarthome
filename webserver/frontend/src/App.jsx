@@ -1,24 +1,38 @@
 import './App.css';
+import { useEffect } from 'react';
 import { DeviceProvider } from './context/DeviceContext';
 import { DeviceList } from './modules/DeviceList';
 
 function App() {
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  useEffect(() => {
+    let ws;
+    let retry;
+    function connect() {
+      const WS_URL = "ws://127.0.0.1:5000/ws/frontend";
+      const ws = new WebSocket(WS_URL);
 
-    fetch("api/turnon/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        "message": "on",
-        "id": "esp32-001"
-      }),
-    })
-      .then((res) => res.text())
-      .then((data) => console.log("Server response:", data))
-      .catch((err) => console.error("Error:", err));
-  };
+      ws.onopen = () => console.log("Connected to WS server");
+
+      ws.onmessage = msg => console.log("Message from server:", msg.data);
+
+      ws.onclose = () => {
+        console.log("WS closed, retrying...");
+        retry = setTimeout(connect, 2000);
+      };
+
+      ws.onerror = () => {
+        ws.close();
+      };
+    }
+
+    connect();
+
+    return () => {
+      clearTimeout(retry);
+      ws?.close();
+    }
+  }, []);
 
   return (
     <DeviceProvider>
