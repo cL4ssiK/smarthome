@@ -1,30 +1,33 @@
 import { useState } from "react";
 
-function DeviceFunctionsForm() {
+function DeviceFunctionsForm({ device, toggleDeviceFunctionState}) {
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  
+  const handleClick = (value) => {
 
-    // Here you can send the data using fetch, axios, etc.
     fetch("api/turnon/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        "message": "on",
-        "id": "esp32-001"
+        "code": value,
+        "id": device.id
       }),
     })
       .then((res) => res.text())
-      .then((data) => console.log("Server response:", data))
+      .then((data) => {
+        console.log("Server response:", data)
+        toggleDeviceFunctionState(device.id, value);
+      })
       .catch((err) => console.error("Error:", err));
   };
 
   return (
-        <form onSubmit={handleSubmit}>
-          <input type="hidden" name="key" value="value"></input>
-          <input type="submit" value="Send Request" />
-        </form>
+        <div key={device.id}>
+          {device.functions.map(func => (
+            <button onClick={() => handleClick(func.code)}>{func.name}</button>
+          ))}
+        </div>
   );
 }
 
-export default DeviceFunctionsForm;
+export { DeviceFunctionsForm };
