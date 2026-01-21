@@ -1,0 +1,25 @@
+.functionRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statusDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.active {
+  background-color: #4caf50;
+}
+
+.inactive {
+  background-color: #7e7b7b;
+}
+
+.error {
+    background-color: #f44336;
+}

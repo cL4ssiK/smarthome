@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
+import styles from "./deviceFunctionsForm.module.css";
 
 function DeviceFunctionsForm({ device, toggleDeviceFunctionState}) {
 
@@ -16,7 +17,7 @@ function DeviceFunctionsForm({ device, toggleDeviceFunctionState}) {
       .then((res) => res.text())
       .then((data) => {
         console.log("Server response:", data)
-        toggleDeviceFunctionState(device.id, value);
+        toggleDeviceFunctionState(device.id, value, "on"); //requires real time updates to make correctly.
       })
       .catch((err) => console.error("Error:", err));
   };
@@ -24,7 +25,12 @@ function DeviceFunctionsForm({ device, toggleDeviceFunctionState}) {
   return (
         <div key={device.id}>
           {device.functions.map(func => (
-            <button key={func.code} onClick={() => handleClick(func.code)}>{func.name}</button>
+            <div key={func.code} className={styles.functionRow}>
+              <button onClick={() => handleClick(func.code)}>{func.name}</button>
+              <span
+                className={`${styles.statusDot} ${
+                func.active == "on" ? styles.active : ( func.active == "off" ? styles.inactive : styles.error )}`}/>
+            </div>
           ))}
         </div>
   );

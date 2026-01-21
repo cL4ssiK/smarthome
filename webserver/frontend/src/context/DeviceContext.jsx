@@ -9,7 +9,7 @@ export function DeviceProvider({ children }) {
    * {
    *    id: "xxxx",
    *    name: "coffeemaker",
-   *    functions: [{name: "turn on", code: "1", active: "true/false},]
+   *    functions: [{name: "turn on", code: "1", active: "on/off/err"},]
    *    active: "true/false",
    *    
    * }
@@ -52,11 +52,11 @@ export function DeviceProvider({ children }) {
         );
     };
 
-    const toggleDeviceFunctionState = (id, code) => {
+    const toggleDeviceFunctionState = (id, code, state) => {
         setDevices(prevDevices => 
             prevDevices.map(device =>
                 device.id === id ? { ...device, functions: device.functions.map(func => 
-                    func.code === code ? {...func, active: !func.active} : func
+                    func.code === code ? {...func, active: state} : func
                 )} : device
             )
         );

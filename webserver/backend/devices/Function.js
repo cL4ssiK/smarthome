@@ -3,7 +3,7 @@ class Function {
     constructor(code, name="") {
         this.name = name;
         this.code = code;
-        this.active = false;
+        this.active = "off"; //on/off/err
     }
 
     execute(websocket) {
