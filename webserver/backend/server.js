@@ -69,11 +69,12 @@ app.get('/api/devices', (req, res) => {
  *  
  */
 app.post('/api/turnon', (req, res) => {
-  const device_id = req.body.id;
+  const device_id = req.body?.id;
+  const command_id = req.body?.code;
   const device = devices.get(device_id);
-  if (device_id) {
+  if (device_id && command_id) {
     console.log(device_id);
-    device.send_command("on");
+    device.send_command(command_id);
   }
   res.send("ok");
 });

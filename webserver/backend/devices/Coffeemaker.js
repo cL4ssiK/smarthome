@@ -6,7 +6,7 @@ class Coffeemaker {
         this.device_id = device_id;
         this.connection = connection;
         this.functions = {
-            on: new Function(1, "Brew coffee"),
+            1: new Function(1, "Brew coffee"),
         };
     }
 
