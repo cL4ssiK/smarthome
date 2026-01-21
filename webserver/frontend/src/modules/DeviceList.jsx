@@ -40,12 +40,15 @@ function DeviceList() {
             {devicesContext.devices.map((device, i) => (
                 <Fragment key={device.id}>
                     <div id={device.id}
-                        className={styles.devicecard}
+                        className={`${styles.commonBox} 
+                        ${deviceFunctions.find(elem => elem.id == device.id)?.toggled ? 
+                            styles.deviceCardfuncOn : ""}`}
                         onClick={() => handleClick(device.id)}>
                         <h3>{device.name == "" ? "Device " + i : device.name}</h3>
                         <p>{device.active ? "on" : "off"}</p>
                     </div>
-                    <div className={styles.devicecard}>
+                    <div className={`${styles.commonBox} 
+                        ${deviceFunctions.find(elem => elem.id == device.id)?.toggled ? styles.functionlistOn : styles.functionlistOff}`}>
                         {deviceFunctions.find(elem => elem.id == device.id)?.toggled &&
                         <DeviceFunctionsForm 
                         device={device} 

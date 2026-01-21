@@ -1,7 +1,24 @@
-.devicecard {
+.commonBox {
     margin: 2em;
     border: 2px black solid; 
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.deviceCardfuncOn{
+    margin-bottom: 0%;
+    border-bottom: 2px gray dashed;
+}
+
+.functionlistOn{
+    margin-top: 0;
+    border-top: 0;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
+.functionlistOff{
+    margin: 0;
+    border: 0;
 }
