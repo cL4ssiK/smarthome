@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect, Fragment } from "react";
-import { DeviceContext } from "../context/DeviceContext";
-//import { DeviceFunctionsForm } from "./deviceFunctionsForm";
+import { DeviceContext} from "../context/DeviceContext";
+import { DeviceFunctionsForm } from "./deviceFunctionsForm";
 import styles from "./DeviceList.module.css";
 
 function DeviceList() {
@@ -10,8 +10,14 @@ function DeviceList() {
     useEffect(() => {
         if (!devicesContext.devices) return;
 
-        setDeviceFunctions(
-            devicesContext.devices.map(device => ({ id: device.id, toggled: false }))
+        setDeviceFunctions(prevDeviceFunctions => 
+            devicesContext.devices.map(device => {
+                const prevToggleState = prevDeviceFunctions?.find(f => f.id == device.id);
+                return { 
+                    id: device.id, 
+                    toggled: prevToggleState? prevToggleState.toggled : false 
+                };
+            })
         );
     }, [devicesContext.devices]);
 
@@ -41,7 +47,10 @@ function DeviceList() {
                     </div>
                     <div className={styles.devicecard}>
                         {deviceFunctions.find(elem => elem.id == device.id)?.toggled &&
-                        <p>tähän devicefunctionformi aina</p>
+                        <DeviceFunctionsForm 
+                        device={device} 
+                        toggleDeviceFunctionState={devicesContext.toggleDeviceFunctionState}
+                        ></DeviceFunctionsForm>
                     }
                     </div>
                 </Fragment>
