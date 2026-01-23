@@ -11,6 +11,7 @@ const char* ssid = "Elisa_Mobi_C0E4";
 const char* pass = "AAJ4788GGY4QN";
 const char* serverIP = "192.168.100.17"; // Node.js server
 const int serverPort = 5000;
+const char* deviceId = "esp32-001";
 
 bool heaterOn = false;
 
@@ -28,8 +29,10 @@ void coffeemakerOn() {
   */
   doc_tx.clear();
   
-  doc_tx["type"] = "state";
-  doc_tx["payload"]["response"] = true;
+  doc_tx["type"] = "functionstate";
+  doc_tx["device_id"] = deviceId;
+  doc_tx["func_code"] = 1;
+  doc_tx["payload"]["success"] = true;
   doc_tx["payload"]["state"] = heaterOn ? "on" : "off";
   
   String json;
@@ -54,7 +57,8 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
     Serial.println("Connected to server");
     digitalWrite(LED_PIN, HIGH);
     // Send device ID on connect
-    webSocket.sendTXT("{\"type\":\"register\",\"device_id\":\"esp32-001\"}");
+    String msg = "{\"type\":\"register\",\"device_id\":\"" + String(deviceId) + "\"}";
+    webSocket.sendTXT(msg);
   }
   else if(type == WStype_TEXT) {
     const char* msg = (char*)payload;
@@ -90,7 +94,7 @@ void setup() {
     Serial.print(".");
   }
   Serial.println("\nWiFi connected");
-  webSocket.begin(serverIP, serverPort, "/");
+  webSocket.begin(serverIP, serverPort, "/ws/iot");
   webSocket.onEvent(webSocketEvent);
   webSocket.setReconnectInterval(5000); // auto reconnect every 5s
 }
