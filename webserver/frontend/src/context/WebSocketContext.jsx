@@ -5,6 +5,7 @@ export const WebSocketContext = createContext(null);
 export function WebSocketProvider({ children }) {
     const ws = useRef(null);
     const [wsState, setWsState] = useState("disconnected");
+    const [lastEvent, setLastEvent] = useState(0);
 
     useEffect(() => {
         let retry;
@@ -20,7 +21,11 @@ export function WebSocketProvider({ children }) {
             }
 
             socket.onmessage = msg => {
-                console.log("Message from server:", msg.data);
+                const data = JSON.parse(msg.data);
+                console.log("Message from server:", data.type);
+                if (data.type === "deviceupdate"){
+                    setLastEvent(id => id + 1);
+                }
             }
 
             socket.onclose = () => {
@@ -49,10 +54,19 @@ export function WebSocketProvider({ children }) {
         }
     }, []);
 
-
+    const sendCommand = (device_id, code) => {
+        const obj = {
+            type: "command",
+            payload: {
+                id: device_id,
+                code: code
+            }
+        };
+        ws?.current.send(JSON.stringify(obj));
+    };
 
   return (
-    <WebSocketContext.Provider value={{ws, wsState, setWsState}}>
+    <WebSocketContext.Provider value={{ws, wsState, lastEvent, setWsState, sendCommand}}>
         {children}
     </WebSocketContext.Provider>
   );

@@ -25,14 +25,14 @@ const clients = new Set(); //Works for now, when users come in need better struc
 wss.on("connection", (ws, req) => {
   if (req.url === "/ws/iot") {
     ws.isAlive = true;
-    handleDeviceConnection(ws, req, devices);
+    handleDeviceConnection(ws, req, devices, clients);
     return;
   }
   else if (req.url === "/ws/frontend") {
     clients.add(ws);
     ws.isAlive = true;
     console.log("New Client added.");
-    handleClientConnection(ws, req, clients);
+    handleClientConnection(ws, req, clients, devices);
     return;
   }
 

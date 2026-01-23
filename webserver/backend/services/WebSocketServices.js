@@ -1,20 +1,46 @@
 import { Coffeemaker } from "../devices/Coffeemaker.js";
 
 
-function handleDeviceConnection(ws, req, devices) {
+function handleDeviceConnection(ws, req, devices, clients) {
+    /**
+     * Message structure:
+     * {
+     *    type: "register",
+     *    device_id: "xxx"
+     * }
+     * or
+     * {
+     *    type: "functionstate",
+     *    device_id: "xxx",
+     *    func_code: 1-x
+     *    payload: {
+     *        success: true/false,
+     *        state: "on/off"
+     *    }
+     * }
+     */
     ws.on("message", msg => {
         const data = JSON.parse(msg);
 
-        if (data.device_id) {
+        if (data.type === "register") {
           const device = new Coffeemaker(data.device_id, ws);
           devices.set(device.device_id, device);
           console.log("ESP registered:", data.device_id);
+          const obj = {
+            type: "deviceupdate",
+          };
+          clients.forEach(client => client.send(JSON.stringify(obj)));
         }
-        else if (data.payload.success){
-          console.log("response: ", data.payload.success);
-        }
-        if (data.payload?.state){
-          console.log("Function state: ", data.payload.state);
+        else if (data.type === "functionstate"){
+
+          const device = devices.get(data.device_id);
+
+          device.changeFunctionState(data.payload?.state, data.func_code);
+
+          const obj = {
+            type: "deviceupdate",
+          };
+          clients.forEach(client => client.send(JSON.stringify(obj)));
         }
     });
 
@@ -26,10 +52,13 @@ function handleDeviceConnection(ws, req, devices) {
         break;
       }
     }
+    const obj = {
+      type: "deviceupdate",
+    };
+    clients.forEach(client => client.send(JSON.stringify(obj)));
   });
 
   ws.on("pong", () => {
-    console.log("pong");
     ws.isAlive = true;
   });
 
@@ -43,6 +72,10 @@ function handleDeviceConnection(ws, req, devices) {
         break;
       }
     }
+    const obj = {
+      type: "deviceupdate",
+    };
+    clients.forEach(client => client.send(JSON.stringify(obj)));
   });
 }
 
@@ -65,8 +98,9 @@ function handleClientConnection(ws, req, clients, devices) {
                 };
                 ws.send(JSON.stringify(object));
             }
+
             // if all good, proceed to forwarding command code to device.
-            const device = devices.find(device => device.device_id === device_id);
+            const device = devices.get(device_id);
             device.send_command(command_code);
         }
     });
@@ -77,7 +111,6 @@ function handleClientConnection(ws, req, clients, devices) {
     });
 
     ws.on("pong", () => {
-        console.log("pong");
         ws.isAlive = true;
     });
 

@@ -6,16 +6,16 @@ import { DeviceList } from './modules/DeviceList';
 function App() {
 
   return (
-    <DeviceProvider>
-      <WebSocketProvider>
+    <WebSocketProvider>
+      <DeviceProvider>
         <div className="App">
           <header className="App-header">
           </header>
           <DeviceList>
           </DeviceList>
         </div>
-      </WebSocketProvider>
-    </DeviceProvider>
+      </DeviceProvider>
+    </WebSocketProvider>
   );
 }
 

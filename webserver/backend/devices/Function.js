@@ -16,6 +16,10 @@ class Function {
             websocket.send(JSON.stringify(object));
         }
     }
+
+    setState(state) {
+        this.active = state;
+    }
 }
 
 export { Function };

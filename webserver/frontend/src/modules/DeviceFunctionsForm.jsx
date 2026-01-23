@@ -1,12 +1,14 @@
-import { useState, Fragment } from "react";
+import { useState, Fragment, useContext } from "react";
 import styles from "./deviceFunctionsForm.module.css";
+import { WebSocketContext } from "../context/WebSocketContext";
 
 function DeviceFunctionsForm({ device, toggleDeviceFunctionState}) {
 
+  const wsContext = useContext(WebSocketContext);
   
   const handleClick = (value) => {
 
-    fetch("api/turnon/", {
+    /**fetch("api/turnon/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -19,7 +21,8 @@ function DeviceFunctionsForm({ device, toggleDeviceFunctionState}) {
         console.log("Server response:", data)
         toggleDeviceFunctionState(device.id, value, "on"); //requires real time updates to make correctly.
       })
-      .catch((err) => console.error("Error:", err));
+      .catch((err) => console.error("Error:", err));*/
+      wsContext.sendCommand(device.id, value);
   };
 
   return (
