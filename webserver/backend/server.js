@@ -61,7 +61,7 @@ server.on("upgrade", (req, socket, head) => {
  * Set background task to ping frontend client reqularly to keep the connection up.
  */
 setInterval(() => {
-      clients.forEach(ws => {
+      wss.clients.forEach(ws => {
           if (ws.isAlive === false) {
               console.log("Terminating dead socket");
               return ws.terminate();

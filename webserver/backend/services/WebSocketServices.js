@@ -27,6 +27,23 @@ function handleDeviceConnection(ws, req, devices) {
       }
     }
   });
+
+  ws.on("pong", () => {
+    console.log("pong");
+    ws.isAlive = true;
+  });
+
+  ws.on("error", () => {
+    console.log("Error, Ws terminated.");
+    ws.terminate();
+    for (const device in devices) {
+      if (device.connection === ws) {
+        devices.delete(device.device_id);
+        console.log(device.device_id + " disconnected!");
+        break;
+      }
+    }
+  });
 }
 
 
@@ -64,7 +81,11 @@ function handleClientConnection(ws, req, clients, devices) {
         ws.isAlive = true;
     });
 
-    ws.on("error", () => ws.terminate());
+    ws.on("error", () => {
+    console.log("Error, Ws terminated.");
+    ws.terminate();
+    clients.delete(ws);
+  });
 }
 
 
