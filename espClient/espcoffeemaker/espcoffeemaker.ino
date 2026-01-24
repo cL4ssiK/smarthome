@@ -56,9 +56,16 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
   if(type == WStype_CONNECTED) {
     Serial.println("Connected to server");
     digitalWrite(LED_PIN, HIGH);
-    // Send device ID on connect
-    String msg = "{\"type\":\"register\",\"device_id\":\"" + String(deviceId) + "\"}";
-    webSocket.sendTXT(msg);
+
+    doc_tx.clear();
+  
+    doc_tx["type"] = "register";
+    doc_tx["device_id"] = deviceId;
+    doc_tx["device_type"] = "coffeemaker";
+
+    String json;
+    serializeJson(doc_tx, json);
+    webSocket.sendTXT(json);
   }
   else if(type == WStype_TEXT) {
     const char* msg = (char*)payload;

@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import http from "http";
 import { WebSocketServer } from "ws";
-import { Coffeemaker } from "./devices/Coffeemaker.js";
+import { Devices } from "./devices/Devices.js";
 import { handleDeviceConnection, handleClientConnection } from "./services/WebSocketServices.js";
 
 dotenv.config();
@@ -17,7 +17,7 @@ const wss = new WebSocketServer({ noServer: true });
 const PORT = process.env.SERVER_PORT || 5000;
 const HEARTBEAT_INTERVAL = 30000;
 
-const devices = new Map();
+const devices = new Devices();
 const clients = new Set(); //Works for now, when users come in need better structure.
 
 //============================== Websocket server ==========================
@@ -74,35 +74,8 @@ setInterval(() => {
 //============================ Rest API ===================================
 
 app.get('/api/devices', (req, res) => {
-  const deviceArray = [];
-  for (const [id, device] of devices) {
-    const funcs = [];
-    for (const key in device.functions) {
-      funcs.push(device.functions[key]);
-    }
-    deviceArray.push({
-      id: id,
-      name: device.name,
-      functions: funcs,
-      active: device.active,
-    });
-  }
+  const deviceArray = devices.getAllInFrontendFormat();
   res.json(deviceArray);
-});
-
-/**
- *  turn on any device connected.
- *  
- */
-app.post('/api/turnon', (req, res) => {
-  const device_id = req.body?.id;
-  const command_id = req.body?.code;
-  const device = devices.get(device_id);
-  if (device_id && command_id) {
-    console.log(device_id);
-    device.send_command(command_id);
-  }
-  res.send("ok");
 });
 
 server.listen(PORT, "0.0.0.0", () => {

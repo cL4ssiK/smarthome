@@ -1,8 +1,8 @@
-import { useState, Fragment, useContext } from "react";
+import { useContext } from "react";
 import styles from "./deviceFunctionsForm.module.css";
 import { WebSocketContext } from "../context/WebSocketContext";
 
-function DeviceFunctionsForm({ device, toggleDeviceFunctionState}) {
+function DeviceFunctionsForm({ device }) {
 
   const wsContext = useContext(WebSocketContext);
   

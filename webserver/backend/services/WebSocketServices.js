@@ -1,4 +1,4 @@
-import { Coffeemaker } from "../devices/Coffeemaker.js";
+import { Device } from "../devices/Device.js";
 
 
 function handleDeviceConnection(ws, req, devices, clients) {
@@ -6,7 +6,8 @@ function handleDeviceConnection(ws, req, devices, clients) {
      * Message structure:
      * {
      *    type: "register",
-     *    device_id: "xxx"
+     *    device_id: "xxx",
+     *    device_type: "eg. coffeemaker"
      * }
      * or
      * {
@@ -21,41 +22,35 @@ function handleDeviceConnection(ws, req, devices, clients) {
      */
     ws.on("message", msg => {
         const data = JSON.parse(msg);
-
+        console.log("Devices connected", devices.size());
+        console.log("Clients connected", clients.size);
         if (data.type === "register") {
-          const device = new Coffeemaker(data.device_id, ws);
-          devices.set(device.device_id, device);
+          const device = new Device(data.device_id, data.device_type);
+          device.connect(ws);
+
+          devices.add(device);
           console.log("ESP registered:", data.device_id);
-          const obj = {
-            type: "deviceupdate",
-          };
-          clients.forEach(client => client.send(JSON.stringify(obj)));
+
+          sendDeviceUpdate(clients);
         }
         else if (data.type === "functionstate"){
 
-          const device = devices.get(data.device_id);
+          const device = devices.findById(data.device_id);
 
           device.changeFunctionState(data.payload?.state, data.func_code);
 
-          const obj = {
-            type: "deviceupdate",
-          };
-          clients.forEach(client => client.send(JSON.stringify(obj)));
+          sendDeviceUpdate(clients);
         }
     });
 
   ws.on("close", () => {
-    for (const device in devices) {
-      if (device.connection === ws) {
-        devices.delete(device.device_id);
-        console.log(device.device_id + " disconnected!");
-        break;
-      }
-    }
-    const obj = {
-      type: "deviceupdate",
-    };
-    clients.forEach(client => client.send(JSON.stringify(obj)));
+    const device = devices.findByConnection(ws);
+
+    device.disconnect();
+
+    console.log(device.device_id + " disconnected!");
+
+    sendDeviceUpdate(clients);
   });
 
   ws.on("pong", () => {
@@ -65,17 +60,11 @@ function handleDeviceConnection(ws, req, devices, clients) {
   ws.on("error", () => {
     console.log("Error, Ws terminated.");
     ws.terminate();
-    for (const device in devices) {
-      if (device.connection === ws) {
-        devices.delete(device.device_id);
-        console.log(device.device_id + " disconnected!");
-        break;
-      }
-    }
-    const obj = {
-      type: "deviceupdate",
-    };
-    clients.forEach(client => client.send(JSON.stringify(obj)));
+    const device = devices.findByConnection(ws);
+    
+    device.disconnect();
+    console.log(device.device_id + " disconnected!");
+    sendDeviceUpdate(clients);
   });
 }
 
@@ -100,7 +89,7 @@ function handleClientConnection(ws, req, clients, devices) {
             }
 
             // if all good, proceed to forwarding command code to device.
-            const device = devices.get(device_id);
+            const device = devices.findById(device_id);
             device.send_command(command_code);
         }
     });
@@ -122,16 +111,11 @@ function handleClientConnection(ws, req, clients, devices) {
 }
 
 
-/**
- * Function to broadcast device updates to all clients.
- * @param {*} devices 
- * @param {*} clients 
- */
-function broadcastDevices(devices, clients) {
-  clients.forEach(ws => {
-    ws.send(JSON.stringify({ type: "devices:update", devices }));
-  });
+function sendDeviceUpdate(clients) {
+  const obj = {
+    type: "deviceupdate",
+  };
+  clients.forEach(client => client.send(JSON.stringify(obj)));
 }
-
 
 export { handleDeviceConnection, handleClientConnection };
