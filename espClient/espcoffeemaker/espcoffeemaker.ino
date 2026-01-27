@@ -7,6 +7,11 @@
 
 using CommandPtr = void (*)();
 
+typedef struct {
+    byte code;
+    const char* name;
+} Func;
+
 const char* ssid = "Elisa_Mobi_C0E4";
 const char* pass = "AAJ4788GGY4QN";
 const char* serverIP = "192.168.100.17"; // Node.js server
@@ -45,7 +50,10 @@ Array of command functions.
 */
 CommandPtr commands[] = {
   coffeemakerOn
+};
 
+Func funcNames[] = {
+  Func{1, "Brew coffee"}
 };
 
 void handleCommand(int cmindex) {
@@ -61,7 +69,13 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
   
     doc_tx["type"] = "register";
     doc_tx["device_id"] = deviceId;
-    doc_tx["device_type"] = "coffeemaker";
+
+    JsonArray functions = doc_tx["payload"].createNestedArray("functions");
+    for (byte i = 0; i < sizeof(funcNames)/sizeof(Func); ++i) {
+      JsonObject obj = functions.createNestedObject();
+      obj["code"] = funcNames[i].code;
+      obj["name"] = funcNames[i].name;
+    }
 
     String json;
     serializeJson(doc_tx, json);

@@ -21,10 +21,14 @@ export function WebSocketProvider({ children }) {
             }
 
             socket.onmessage = msg => {
-                const data = JSON.parse(msg.data);
-                console.log("Message from server:", data.type);
-                if (data.type === "deviceupdate"){
-                    setLastEvent(id => id + 1);
+                try {
+                    const data = JSON.parse(msg.data);
+                    console.log("Message from server:", data.type);
+                    if (data.type === "deviceupdate"){
+                        setLastEvent(id => id + 1);
+                    }
+                } catch(err) {
+                    console.log("Error parsing JSON data.", err);
                 }
             }
 

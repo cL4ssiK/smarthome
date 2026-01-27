@@ -43,7 +43,7 @@ function DeviceList() {
                         className={`${styles.commonBox} 
                         ${deviceFunctions.find(elem => elem.id == device.id)?.toggled ? 
                             styles.deviceCardfuncOn : ""}`}
-                        onClick={() => handleClick(device.id)}>
+                        onClick={device.active ? () => handleClick(device.id) : undefined}>
                         <h3>{device.name == "" ? "Device " + i : device.name}</h3>
                         <p>{device.active ? "on" : "off"}</p>
                     </div>

@@ -1,12 +1,12 @@
 import { Function } from "./Function.js";
 
 class Device {
-    constructor(device_id, type, name="") {
+    constructor(device_id, functions, name="") {
         this.name = name;
         this.device_id = device_id;
         this.connection = null;
         this.active = false;
-        this.functions = deviceFunctionsProvider(type);
+        this.functions = this.#deviceFunctionsProvider(functions);
     }
 
     connect(ws) {
@@ -27,18 +27,14 @@ class Device {
     changeFunctionState(state, code) {
         this.functions[code].setState(state);
     }
-}
 
-function deviceFunctionsProvider(deviceType) {
-    switch (deviceType) {
-        case "coffeemaker":
-            return {
-                1: new Function(1, "Brew coffee"),
-            };
-        default:
-            return {}
+    #deviceFunctionsProvider(functions) {
+        const funcs = {};
+        functions.forEach(func => {
+            funcs[func.code] = new Function(func.code, func.name);
+        });
+        return funcs;
     }
-
 }
 
 export { Device };

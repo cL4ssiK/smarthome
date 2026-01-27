@@ -23,9 +23,9 @@ class Devices {
     }
 
     findByConnection(ws) {
-        if (!(ws instanceof WebSocket)) return null;
+        //if (!(ws instanceof WebSocket)) return null;
 
-        for (const device in this.known_devices) {
+        for (const device of this.known_devices.values()) {
             if (device.connection === ws) return device;
         }
         return null;

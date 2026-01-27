@@ -22,10 +22,9 @@ function handleDeviceConnection(ws, req, devices, clients) {
      */
     ws.on("message", msg => {
         const data = JSON.parse(msg);
-        console.log("Devices connected", devices.size());
-        console.log("Clients connected", clients.size);
+
         if (data.type === "register") {
-          const device = new Device(data.device_id, data.device_type);
+          const device = new Device(data.device_id, data?.payload?.functions);
           device.connect(ws);
 
           devices.add(device);
