@@ -7,22 +7,7 @@ function DeviceFunctionsForm({ device }) {
   const wsContext = useContext(WebSocketContext);
   
   const handleClick = (value) => {
-
-    /**fetch("api/turnon/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        "code": value,
-        "id": device.id
-      }),
-    })
-      .then((res) => res.text())
-      .then((data) => {
-        console.log("Server response:", data)
-        toggleDeviceFunctionState(device.id, value, "on"); //requires real time updates to make correctly.
-      })
-      .catch((err) => console.error("Error:", err));*/
-      wsContext.sendCommand(device.id, value);
+    wsContext.sendCommand(device.id, value);
   };
 
   return (
