@@ -12,14 +12,15 @@ function DeviceFunctionsForm({ device }) {
 
   return (
         <div key={device.id}>
-          {device.functions.map(func => (
+          {device.functions.map(func => {
+            return (
             <div key={func.code} className={styles.functionRow}>
               <button onClick={() => handleClick(func.code)}>{func.name}</button>
               <span
                 className={`${styles.statusDot} ${
                 func.active == "on" ? styles.active : ( func.active == "off" ? styles.inactive : styles.error )}`}/>
             </div>
-          ))}
+          );})}
         </div>
   );
 }

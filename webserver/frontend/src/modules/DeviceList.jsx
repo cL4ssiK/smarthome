@@ -40,6 +40,7 @@ function DeviceList() {
             {devicesContext.devices?.map((device, i) => (
                 <Fragment key={device.id}>
                     <div id={device.id}
+                        data-testid="device-card-testdevice1" 
                         className={`${styles.commonBox} 
                         ${deviceFunctions.find(elem => elem.id == device.id)?.toggled ? 
                             styles.deviceCardfuncOn : ""}`}
@@ -52,7 +53,6 @@ function DeviceList() {
                         {deviceFunctions.find(elem => elem.id == device.id)?.toggled &&
                         <DeviceFunctionsForm 
                         device={device} 
-                        toggleDeviceFunctionState={devicesContext.toggleDeviceFunctionState}
                         ></DeviceFunctionsForm>
                     }
                     </div>
