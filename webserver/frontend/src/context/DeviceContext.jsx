@@ -35,7 +35,7 @@ export const validateDevices = (data) => {
                 return;
             }
             // If function state is something else than some of the predetermined, put state to error.
-            if(func.active !== "on" || func.active !== "off" || func.active !== "err") {
+            if(!(func.active === "on" || func.active === "off" || func.active === "err")) {
                 func.active = "err";
             }
             functions.push(func);
