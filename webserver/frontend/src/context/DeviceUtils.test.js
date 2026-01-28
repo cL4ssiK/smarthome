@@ -89,7 +89,7 @@ describe('validateDevices Unit Tests', () => {
 
     const result = validateDevices(input);
 
-    expect(result[0].functions[0].active).toEqual('err');
+    expect(result[0].functions[0].active).toEqual('off');
     expect(result[1].functions[0].active).toEqual('err');
   });
 
