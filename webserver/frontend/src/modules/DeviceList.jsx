@@ -11,7 +11,7 @@ function DeviceList() {
         if (!devicesContext.devices) return;
 
         setDeviceFunctions(prevDeviceFunctions => 
-            devicesContext.devices.map(device => {
+            devicesContext.devices?.map(device => {
                 const prevToggleState = prevDeviceFunctions?.find(f => f.id == device.id);
                 return { 
                     id: device.id, 
@@ -37,7 +37,7 @@ function DeviceList() {
 
     return (
         <div >
-            {devicesContext.devices.map((device, i) => (
+            {devicesContext.devices?.map((device, i) => (
                 <Fragment key={device.id}>
                     <div id={device.id}
                         className={`${styles.commonBox} 
