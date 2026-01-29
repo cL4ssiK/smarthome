@@ -15,7 +15,7 @@ class Device {
     }
 
     disconnect() {
-        this.connection.close();
+        this.connection?.close();
         this.connection = null;
         this.active = false;
     }

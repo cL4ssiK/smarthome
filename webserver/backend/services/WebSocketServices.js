@@ -48,9 +48,9 @@ function handleDeviceConnection(ws, req, devices, clients) {
     if(device) {
       device?.disconnect();
       console.log(device.device_id + " disconnected!");
+      sendDeviceUpdate(clients);
     }
 
-    sendDeviceUpdate(clients);
   });
 
   ws.on("pong", () => {
@@ -97,7 +97,7 @@ function handleClientConnection(ws, req, clients, devices) {
           const device_id = payload?.id;
           devices.remove(device_id);
           console.log("Device " + device_id + " removed");
-          //sendDeviceUpdate(clients);
+          sendDeviceUpdate(clients);
         }
     });
 
