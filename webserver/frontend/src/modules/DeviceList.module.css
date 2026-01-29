@@ -4,6 +4,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    position: relative;
 }
 
 .deviceCardfuncOn{
@@ -21,4 +23,21 @@
 .functionlistOff{
     margin: 0;
     border: 0;
+}
+
+.removeButton {
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 50%;
+    margin-right: 8px;
+    background-color: #b6b5b5;
+    line-height: 0;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position: absolute;
+    top: 5px;
+    right: 5px;
 }

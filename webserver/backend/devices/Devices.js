@@ -15,6 +15,7 @@ class Devices {
     }
 
     remove(id) {
+        this.findById(id)?.disconnect();
         this.known_devices.delete(id);
     }
 

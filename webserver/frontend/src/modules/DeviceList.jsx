@@ -1,10 +1,13 @@
 import { useContext, useState, useEffect, Fragment } from "react";
 import { DeviceContext} from "../context/DeviceContext";
+import { WebSocketContext } from "../context/WebSocketContext";
 import { DeviceFunctionsForm } from "./deviceFunctionsForm";
 import styles from "./DeviceList.module.css";
 
 function DeviceList() {
     const devicesContext = useContext(DeviceContext);
+    const wsContext = useContext(WebSocketContext);
+
     const [deviceFunctions, setDeviceFunctions] = useState([]);
 
     useEffect(() => {
@@ -31,6 +34,10 @@ function DeviceList() {
         changeDevFuncVisibility(id);
     }
 
+    function handleRemoveBtonClick(id){
+        wsContext.removeDevice(id);
+    }
+
     if (devicesContext.loading) {
         return <p>Loading...</p>;
     }
@@ -45,6 +52,8 @@ function DeviceList() {
                         ${deviceFunctions.find(elem => elem.id == device.id)?.toggled ? 
                             styles.deviceCardfuncOn : ""}`}
                         onClick={device.active ? () => handleClick(device.id) : undefined}>
+                        <span className={styles.removeButton}
+                                onClick={() => handleRemoveBtonClick(device.id)}>X</span>
                         <h3>{device.name == "" ? "Device " + i : device.name}</h3>
                         <p>{device.active ? "on" : "off"}</p>
                     </div>

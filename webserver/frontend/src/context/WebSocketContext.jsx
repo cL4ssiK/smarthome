@@ -69,8 +69,18 @@ export function WebSocketProvider({ children }) {
         ws?.current.send(JSON.stringify(obj));
     };
 
+    const removeDevice = (device_id) => {
+        const obj = {
+            type: "remove",
+            payload: {
+                id: device_id,
+            }
+        };
+        ws?.current?.send(JSON.stringify(obj));
+    };
+
   return (
-    <WebSocketContext.Provider value={{ws, wsState, lastEvent, setWsState, sendCommand}}>
+    <WebSocketContext.Provider value={{ws, wsState, lastEvent, setWsState, sendCommand, removeDevice}}>
         {children}
     </WebSocketContext.Provider>
   );

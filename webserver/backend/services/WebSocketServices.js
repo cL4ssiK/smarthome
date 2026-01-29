@@ -45,9 +45,10 @@ function handleDeviceConnection(ws, req, devices, clients) {
   ws.on("close", () => {
     const device = devices.findByConnection(ws);
 
-    device.disconnect();
-
-    console.log(device.device_id + " disconnected!");
+    if(device) {
+      device?.disconnect();
+      console.log(device.device_id + " disconnected!");
+    }
 
     sendDeviceUpdate(clients);
   });
@@ -90,6 +91,13 @@ function handleClientConnection(ws, req, clients, devices) {
             // if all good, proceed to forwarding command code to device.
             const device = devices.findById(device_id);
             device.send_command(command_code);
+        }
+        else if (data.type == "remove") {
+          const payload = data.payload;
+          const device_id = payload?.id;
+          devices.remove(device_id);
+          console.log("Device " + device_id + " removed");
+          //sendDeviceUpdate(clients);
         }
     });
 
