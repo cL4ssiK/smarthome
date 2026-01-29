@@ -68,7 +68,11 @@ export function DeviceProvider({ children }) {
           const res = await fetch('/api/devices'); // replace with your endpoint
           if (!res.ok) throw new Error('Failed to fetch devices');
           const data = await res.json();
-          const validatedData = validateDevices(data);
+          const validatedData = validateDevices(data).sort((a, b) => {
+            if (a.active && !b.active) return -1;
+            if (!a.active && b.active) return 1;
+            return 0;
+          });
           setDevices(validatedData);
         } catch (err) {
           setError(err.message);
