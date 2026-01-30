@@ -3,46 +3,80 @@
 #include <ArduinoJson.h>
 
 #define LED_PIN 32
-#define COFFEEMAKER_ON_PIN 33
+#define POWER_BTON_PIN 33
+#define STATE_MONITOR_PIN 25
 
 using CommandPtr = void (*)();
 
 typedef struct {
     byte code;
     const char* name;
+    bool state;
 } Func;
 
-const char* ssid = "Elisa_Mobi_C0E4";
-const char* pass = "AAJ4788GGY4QN";
-const char* serverIP = "192.168.100.17"; // Node.js server
-const int serverPort = 5000;
-const char* deviceId = "esp32-001";
+const char* ssid = "XXXXXX";
+const char* pass = "XXXXXX";
+const char* serverIP = "xxx.xxx.xxx.xxx";
+const int serverPort = 1234;
+const char* deviceId = "xxx";
 
-bool heaterOn = false;
+volatile bool heaterState = false;
+volatile bool prevHeaterState = false;
 
 WebSocketsClient webSocket;
 JsonDocument doc_rx;
 JsonDocument doc_tx;
 
+Func funcNames[] = {
+  Func{1, "Brew coffee", false}
+};
 
-void coffeemakerOn() {
-  heaterOn = !heaterOn;
-  digitalWrite(COFFEEMAKER_ON_PIN, heaterOn);
-  /** Simulate "push" of the button.
-  delay(100);
-  digitalWrite(COFFEEMAKER_ON_PIN, LOW);
-  */
+/**
+Hardware interrupt routine to read and update machine state.
+*/
+void ISR() {
+  prevHeaterState = heaterState;
+  heaterState = digitalRead(STATE_MONITOR_PIN);
+}
+
+/**
+Handles sending function state to server.
+*/
+void sendFunctionState(Func f) {
   doc_tx.clear();
   
   doc_tx["type"] = "functionstate";
   doc_tx["device_id"] = deviceId;
-  doc_tx["func_code"] = 1;
+  doc_tx["func_code"] = f.code;
   doc_tx["payload"]["success"] = true;
-  doc_tx["payload"]["state"] = heaterOn ? "on" : "off";
+  doc_tx["payload"]["state"] = f.state ? "on" : "off";
   
   String json;
   serializeJson(doc_tx, json);
   webSocket.sendTXT(json);
+}
+
+/**
+Read the machine state and send it to server if it has changed.
+*/
+void readMachineState() {
+  if(heaterState != prevHeaterState) {
+    funcNames[0].state = heaterState;
+    prevHeaterState = heaterState;
+    sendFunctionState(funcNames[0]);
+  }
+}
+
+/**
+Turn the device on/off.
+*/
+void coffeemakerOn() {
+  digitalWrite(POWER_BTON_PIN, !heaterState);
+  /** Simulate "push" of the button. Use this with coffeemaker.
+  digitalWrite(POWER_BTON_PIN, HIGH);
+  delay(100);
+  digitalWrite(POWER_BTON_PIN, LOW);
+  */
 }
 
 /**
@@ -52,14 +86,25 @@ CommandPtr commands[] = {
   coffeemakerOn
 };
 
-Func funcNames[] = {
-  Func{1, "Brew coffee"}
-};
-
+/**
+Map command code to array of corresponding functions.
+Currently codes need to be continuous set of integers from 1 to n.
+*/
 void handleCommand(int cmindex) {
   commands[cmindex - 1]();
 }
 
+/**
+Handles the websocket events.
+Connect: 
+  - Set indicator LED on.
+  - Send device information for server.
+Message(text):
+  - Deserialize json data.
+  - Call function corresponding the received code.
+Disconnect:
+  - Turn off indicator LED
+*/
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
   if(type == WStype_CONNECTED) {
     Serial.println("Connected to server");
@@ -75,6 +120,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
       JsonObject obj = functions.createNestedObject();
       obj["code"] = funcNames[i].code;
       obj["name"] = funcNames[i].name;
+      obj["initialstate"] = funcNames[i].state ? "on" : "off";
     }
 
     String json;
@@ -104,9 +150,16 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
   }
 }
 
+
 void setup() {
   pinMode(LED_PIN, OUTPUT);
-  pinMode(COFFEEMAKER_ON_PIN, OUTPUT);
+  pinMode(POWER_BTON_PIN, OUTPUT);
+  pinMode(STATE_MONITOR_PIN, INPUT_PULLDOWN);
+
+  attachInterrupt(STATE_MONITOR_PIN, ISR, CHANGE);
+
+  funcNames[0].state = digitalRead(STATE_MONITOR_PIN);
+
   Serial.begin(115200);
   WiFi.begin(ssid, pass);
 
@@ -122,4 +175,5 @@ void setup() {
 
 void loop() {
   webSocket.loop(); // must call frequently
+  readMachineState();
 }
