@@ -26,6 +26,7 @@ function handleDeviceConnection(ws, req, devices, clients) {
         if (data.type === "register") {
           const device = new Device(data.device_id, data?.payload?.functions);
           device.connect(ws);
+          data?.payload?.functions.forEach(func => device.changeFunctionState(func.initialstate, func.code));
 
           devices.add(device);
           console.log("ESP registered:", data.device_id);
