@@ -12,7 +12,7 @@ class Function {
             payload: { command: this.code }
         }
 
-        if (object) {
+        if (object && websocket) {
             websocket.send(JSON.stringify(object));
         }
     }
