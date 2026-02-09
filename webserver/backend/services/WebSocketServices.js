@@ -38,7 +38,7 @@ function handleDeviceConnection(ws, req, devices, clients) {
           const device = devices.findById(data.device_id);
 
           device.changeFunctionState(data.payload?.state, data.func_code);
-
+          
           sendDeviceUpdate(clients);
         }
     });

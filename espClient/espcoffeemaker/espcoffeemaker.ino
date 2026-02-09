@@ -20,23 +20,21 @@ const char* serverIP = "xxx.xxx.xxx.xxx";
 const int serverPort = 1234;
 const char* deviceId = "xxx";
 
-volatile bool heaterState = false;
-volatile bool prevHeaterState = false;
+volatile bool heaterFlag = false;
 
 WebSocketsClient webSocket;
 JsonDocument doc_rx;
 JsonDocument doc_tx;
 
 Func funcNames[] = {
-  Func{1, "Brew coffee", false}
+  Func{1, "Brew coffee", HIGH}
 };
 
 /**
 Hardware interrupt routine to read and update machine state.
 */
 void ISR() {
-  prevHeaterState = heaterState;
-  heaterState = digitalRead(STATE_MONITOR_PIN);
+  heaterFlag = true;
 }
 
 /**
@@ -49,7 +47,9 @@ void sendFunctionState(Func f) {
   doc_tx["device_id"] = deviceId;
   doc_tx["func_code"] = f.code;
   doc_tx["payload"]["success"] = true;
-  doc_tx["payload"]["state"] = f.state ? "on" : "off";
+  doc_tx["payload"]["state"] = !f.state ? "on" : "off";
+  //doc_tx["debug"]["statemonitor"] = digitalRead(STATE_MONITOR_PIN) ? "HIGH" : "LOW";
+
   
   String json;
   serializeJson(doc_tx, json);
@@ -60,10 +60,16 @@ void sendFunctionState(Func f) {
 Read the machine state and send it to server if it has changed.
 */
 void readMachineState() {
-  if(heaterState != prevHeaterState) {
-    funcNames[0].state = heaterState;
-    prevHeaterState = heaterState;
-    sendFunctionState(funcNames[0]);
+  if (heaterFlag) {
+    delay(20);
+    bool heaterState = digitalRead(STATE_MONITOR_PIN);
+
+    if(heaterState != funcNames[0].state) {
+      funcNames[0].state = heaterState;
+      sendFunctionState(funcNames[0]);
+    }
+
+    heaterFlag = false;
   }
 }
 
@@ -71,12 +77,10 @@ void readMachineState() {
 Turn the device on/off.
 */
 void coffeemakerOn() {
-  digitalWrite(POWER_BTON_PIN, !heaterState);
-  /** Simulate "push" of the button. Use this with coffeemaker.
+  /** Simulate "push" of the button. Use this with coffeemaker.*/
   digitalWrite(POWER_BTON_PIN, HIGH);
   delay(100);
   digitalWrite(POWER_BTON_PIN, LOW);
-  */
 }
 
 /**
@@ -120,7 +124,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
       JsonObject obj = functions.createNestedObject();
       obj["code"] = funcNames[i].code;
       obj["name"] = funcNames[i].name;
-      obj["initialstate"] = funcNames[i].state ? "on" : "off";
+      obj["initialstate"] = !funcNames[i].state ? "on" : "off";
     }
 
     String json;
@@ -154,7 +158,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 void setup() {
   pinMode(LED_PIN, OUTPUT);
   pinMode(POWER_BTON_PIN, OUTPUT);
-  pinMode(STATE_MONITOR_PIN, INPUT_PULLDOWN);
+  pinMode(STATE_MONITOR_PIN, INPUT_PULLUP);
 
   attachInterrupt(STATE_MONITOR_PIN, ISR, CHANGE);
 
