@@ -78,6 +78,16 @@ app.get('/api/devices', (req, res) => {
   res.json(deviceArray);
 });
 
+if (process.env.NODE_ENV === 'production') {
+  // Serve static files from the build folder
+  app.use(express.static(path.join(__dirname, 'public')));
+
+  // The "catchall" for React Router
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  });
+}
+
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`Server listening on port ${PORT}`);
 });

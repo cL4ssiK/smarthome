@@ -11,7 +11,8 @@ export function WebSocketProvider({ children }) {
         let retry;
         let socket;
         function connect() {
-            const WS_URL = "ws://192.168.100.17:5000/ws/frontend";
+            const WS_URL = process.env.NODE_ENV === "production" ? 
+                 `ws://${window.location.host}/ws/frontend` : "ws://192.168.100.17:5000/ws/frontend";
             const socket = new WebSocket(WS_URL);
 
             socket.onopen = () => {
