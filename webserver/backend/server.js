@@ -1,9 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
 import http from "http";
+import path from "path";
 import { WebSocketServer } from "ws";
 import { Devices } from "./devices/Devices.js";
 import { handleDeviceConnection, handleClientConnection } from "./services/WebSocketServices.js";
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 
@@ -14,8 +16,12 @@ const server = http.createServer(app);
 
 const wss = new WebSocketServer({ noServer: true });
 
-const PORT = process.env.SERVER_PORT || 5000;
+const PORT = process.env.NODE_ENV === 'production' ? 
+  process.env.PROD_PORT || 3000 : process.env.SERVER_PORT || 5000;
 const HEARTBEAT_INTERVAL = 30000;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const devices = new Devices();
 const clients = new Set(); //Works for now, when users come in need better structure.
@@ -83,7 +89,7 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'public')));
 
   // The "catchall" for React Router
-  app.get('*', (req, res) => {
+  app.get(/^(?!\/api).+/, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
   });
 }
