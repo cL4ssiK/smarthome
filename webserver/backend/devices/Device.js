@@ -1,4 +1,4 @@
-import { Function } from "./Function.js";
+import { Function, TimedFunction } from "./Function.js";
 
 class Device {
     constructor(device_id, functions, name="") {
@@ -32,7 +32,8 @@ class Device {
     #deviceFunctionsProvider(functions) {
         const funcs = {};
         functions.forEach(func => {
-            funcs[func.code] = new Function(func.code, func.name);
+            const f = func.allowtimer ? new TimedFunction(func.code, func.name) : new Function(func.code, func.name);
+            funcs[func.code] = f;
         });
         return funcs;
     }
