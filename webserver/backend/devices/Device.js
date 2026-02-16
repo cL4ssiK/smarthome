@@ -25,6 +25,12 @@ class Device {
         func.execute(this.connection);
     }
 
+    set_timer(command, time, timeS, type) {
+        const func = this.functions[command];
+        if (!(func instanceof TimedFunction)) { return }
+        func.setTimer(time, timeS, type, this.connection);
+    }
+
     changeFunctionState(state, code) {
         this.functions[code].setState(state);
     }

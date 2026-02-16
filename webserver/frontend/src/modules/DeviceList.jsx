@@ -10,6 +10,8 @@ function DeviceList() {
 
     const [deviceFunctions, setDeviceFunctions] = useState([]);
 
+    const [selectedFunction, setSelectedFunction] = useState(null);
+
     useEffect(() => {
         if (!devicesContext.devices) return;
 
@@ -43,14 +45,15 @@ function DeviceList() {
     }
 
     return (
-        <div >
+        <div>
             {devicesContext.devices?.map((device, i) => (
-                <Fragment key={device.id}>
+                <div key={device.id}
+                    className={styles.deviceDiv}>
                     <div id={device.id}
                         data-testid="device-card-testdevice1" 
                         className={`${styles.commonBox} 
                         ${deviceFunctions.find(elem => elem.id == device.id)?.toggled ? 
-                            styles.deviceCardfuncOn : ""}`}
+                            styles.deviceCardfuncOn : styles.deviceCardfuncOff}`}
                         onClick={device.active ? () => handleClick(device.id) : undefined}>
                         <span className={styles.removeButton}
                                 onClick={() => handleRemoveBtonClick(device.id)}>X</span>
@@ -65,7 +68,7 @@ function DeviceList() {
                         ></DeviceFunctionsForm>
                     }
                     </div>
-                </Fragment>
+                </div>
             ))}
         </div>
     )

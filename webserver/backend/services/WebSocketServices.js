@@ -25,6 +25,7 @@ function handleDeviceConnection(ws, req, devices, clients) {
 
         if (data.type === "register") {
           const device = new Device(data.device_id, data?.payload?.functions);
+          console.log(data.payload.functions);
           device.connect(ws);
           data?.payload?.functions.forEach(func => device.changeFunctionState(func.initialstate, func.code));
 
@@ -74,24 +75,7 @@ function handleClientConnection(ws, req, clients, devices) {
     ws.on("message", msg => {
         const data = JSON.parse(msg);
         if (data.type === "command") {
-            const payload = data.payload;
-            const device_id = payload?.id;
-            const command_code = payload?.code;
-
-            // in case of missing data, send error to client
-            if (!(device_id && command_code)) {
-                const object = {
-                    type: "functionstate",
-                    payload: {
-                        state: "err"
-                    }
-                };
-                ws.send(JSON.stringify(object));
-            }
-
-            // if all good, proceed to forwarding command code to device.
-            const device = devices.findById(device_id);
-            device.send_command(command_code);
+          handleCommand(devices, data);
         }
         else if (data.type == "remove") {
           const payload = data.payload;
@@ -124,6 +108,34 @@ function sendDeviceUpdate(clients) {
     type: "deviceupdate",
   };
   clients.forEach(client => client.send(JSON.stringify(obj)));
+}
+
+function handleCommand(devices, data) {
+  const payload = data.payload;
+  const device_id = payload?.id;
+  const command_code = payload?.code;
+  const timer = payload?.timer;
+
+  // in case of missing data, send error to client
+  if (!(device_id && command_code)) {
+      const object = {
+          type: "functionstate",
+          payload: {
+              state: "err"
+          }
+      };
+      ws.send(JSON.stringify(object));
+  }
+
+  // if all good, proceed to forwarding command code to device.
+  const device = devices.findById(device_id);
+  if (timer) {
+    //TODO: backend validation
+    device.set_timer(command_code, timer.time, timer.timeS, timer.type);
+  }
+  else {
+    device.send_command(command_code);
+  }
 }
 
 export { handleDeviceConnection, handleClientConnection };

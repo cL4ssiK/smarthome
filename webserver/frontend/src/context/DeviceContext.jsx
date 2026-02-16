@@ -119,8 +119,13 @@ export function DeviceProvider({ children }) {
         );
     }
 
+    const getDeviceFunctionState = (id, code) => {
+        return devices.find(device => device.id === id)?.
+            functions?.find(func => func.code === code)?.active;
+    };
+
   return (
-    <DeviceContext.Provider value={{ devices, loading, error, addDevice, removeDevice, toggleDeviceState, toggleDeviceFunctionState, changeDeviceName }}>
+    <DeviceContext.Provider value={{ devices, loading, error, removeDevice, changeDeviceName, getDeviceFunctionState }}>
       {children}
     </DeviceContext.Provider>
   );
