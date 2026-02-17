@@ -68,19 +68,30 @@ function FunctionDetails({ func, device }) {
         <div>
             <h2>{func?.name}</h2>
             <button onClick={() => handleClick(func?.code)}>{funcState === "on" ? "Deactivate" : "Activate"}</button>
-            <button onClick={() => handleTimerClick()}
-            >Set timer</button>
-            <input 
-                value={timerTime}
-                onChange={e => setTimerTime(e.target.value)}
-                placeholder="HH:MM"></input>
-            <p>{timerErr}</p>
-            <button
-                value={"on"}
-                onClick={e => setTimerState(e.target.value)}>Activate</button>
-            <button
-                value={"off"}
-                onClick={e => setTimerState(e.target.value)}>Deactivate</button>
+            {
+                func.activateEventId !== undefined &&
+                <div>
+                    <button onClick={() => handleTimerClick()}
+                    >Set timer</button>
+                    <input 
+                        value={timerTime}
+                        onChange={e => setTimerTime(e.target.value)}
+                        placeholder="HH:MM"></input>
+                    <p>{timerErr}</p>
+                    <button
+                        value={"on"}
+                        onClick={e => setTimerState(e.target.value)}>Activate</button>
+                    <button
+                        value={"off"}
+                        onClick={e => setTimerState(e.target.value)}>Deactivate</button>
+                    {
+                        func?.activateEventId && <p>Activates at {func?.activateEventTriggerTime}</p>
+                    }
+                    {
+                        func?.deactivateEventId && <p>Deactivates at {func?.deactivateEventTriggerTime}</p>
+                    }
+                </div>
+            }
         </div>
     );
 }

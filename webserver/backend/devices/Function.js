@@ -51,22 +51,26 @@ class TimedFunction extends Function{
         }
 
         if (type === "on") {
-            this.activateEventId = setTimeout(() => {
+            const timeoutObj = setTimeout(() => {
                 // If function is already at decireable state, do nothing.
-                if (this.active === "err" || this.active === type) return;
-                this.execute(ws);
+                if (!(this.active === "err" || this.active === type)) this.execute(ws);
+                this.activateEventId = null;
+                this.activateEventTriggerTime = null;
             }, durationMs);
-    
+
+            this.activateEventId = timeoutObj[Symbol.toPrimitive]('number');
             this.activateEventTriggerTime = time;
             console.log(`${type} timer set at: ${time}`);
         }
         else if (type === "off") {
-            this.deactivateEventId = setTimeout(() => {
+            const timeoutObj = setTimeout(() => {
                 // If function is already at decireable state, do nothing.
-                if (this.active === "err" || this.active === type) return;
-                this.execute(ws);
+                if (!(this.active === "err" || this.active === type)) this.execute(ws);
+                this.deactivateEventId = null;
+                this.deactivateEventTriggerTime = null;
             }, durationMs);
     
+            this.deactivateEventId = timeoutObj[Symbol.toPrimitive]('number');
             this.deactivateEventTriggerTime = time;
             console.log(`${type} timer set at: ${time}`);
         }

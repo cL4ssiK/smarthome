@@ -70,12 +70,13 @@ function handleDeviceConnection(ws, req, devices, clients) {
   });
 }
 
-
+//TODO: fix the issue that deviceupdate is only sent if state changes on timed call.
 function handleClientConnection(ws, req, clients, devices) {
     ws.on("message", msg => {
         const data = JSON.parse(msg);
         if (data.type === "command") {
           handleCommand(devices, data);
+          sendDeviceUpdate(clients);
         }
         else if (data.type == "remove") {
           const payload = data.payload;

@@ -7,32 +7,32 @@ function DeviceFunctionsForm({ device }) {
 
   const wsContext = useContext(WebSocketContext);
 
-  const [activeFunction, setActiveFunction] = useState(null);
+  const [activeFunctionCode, setActiveFunctionCode] = useState(null);
   
-  const handleClick = (func) => {
-    setActiveFunction(func);
+  const handleClick = (code) => {
+    setActiveFunctionCode(code);
   };
 
   const handleReturnBtonClick = () => {
-    setActiveFunction(null);
+    setActiveFunctionCode(null);
   };
 
   return (
         <div key={device.id}>
           {
-            activeFunction ?
+            activeFunctionCode ?
             (<div>
               <span className={styles.removeButton}
                 onClick={() => handleReturnBtonClick()}>X</span>
               <FunctionDetails
                 device={device}
-                func={activeFunction}>
+                func={device?.functions?.find(func => func.code === activeFunctionCode)}>
               </FunctionDetails>
             </div>) : 
             (device.functions.map(func => {
               return (
               <div key={func.code} className={styles.functionRow}>
-                <button onClick={() => handleClick(func)}>{func.name}</button>
+                <button onClick={() => handleClick(func.code)}>{func.name}</button>
                 <span
                   className={`${styles.statusDot} ${
                   func.active == "on" ? styles.active : ( func.active == "off" ? styles.inactive : styles.error )}`}/>
