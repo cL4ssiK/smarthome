@@ -72,17 +72,27 @@ export function WebSocketProvider({ children }) {
 
     const sendTimerEvent = (device_id, code, type, timeRaw, timeS) => {
         const obj = {
-            type: "command",
+            type: "timedcommand",
             payload: {
                 id: device_id,
                 code: code,
-                timer: {
-                    type: type,
-                    timeS: timeS,
-                    time: timeRaw
-                },
+                type: type,
+                timeS: timeS,
+                time: timeRaw
             }
         };
+        ws?.current.send(JSON.stringify(obj));
+    };
+
+    const removeTimerEvent = (device_id, code, type) => {
+        const obj = {
+            type: "removetimer",
+            payload: {
+                id: device_id,
+                code: code,
+                type: type,
+                },
+            };
         ws?.current.send(JSON.stringify(obj));
     };
 
@@ -97,7 +107,7 @@ export function WebSocketProvider({ children }) {
     };
 
   return (
-    <WebSocketContext.Provider value={{ws, wsState, lastEvent, setWsState, sendCommand, sendTimerEvent, removeDevice}}>
+    <WebSocketContext.Provider value={{ws, wsState, lastEvent, setWsState, sendCommand, sendTimerEvent, removeTimerEvent, removeDevice}}>
         {children}
     </WebSocketContext.Provider>
   );

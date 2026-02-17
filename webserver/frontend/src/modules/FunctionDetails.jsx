@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { WebSocketContext } from "../context/WebSocketContext";
 import { DeviceContext } from "../context/DeviceContext";
+import styles from "./FunctionDetails.module.css";
 
 function FunctionDetails({ func, device }) {
 
@@ -37,6 +38,10 @@ function FunctionDetails({ func, device }) {
         wsContext.sendTimerEvent(device.id, func.code, timerState, timerTime, timerInterval);
     };
 
+    const handleDeleteBtonClick = () => {
+        wsContext.removeTimerEvent(device.id, func.code, timerState);
+    }
+
     const validateTimer = (time) => {
         let errMsg = "";
         if (time === "") {
@@ -69,7 +74,7 @@ function FunctionDetails({ func, device }) {
             <h2>{func?.name}</h2>
             <button onClick={() => handleClick(func?.code)}>{funcState === "on" ? "Deactivate" : "Activate"}</button>
             {
-                func.activateEventId !== undefined &&
+                func.timer !== undefined &&
                 <div>
                     <button onClick={() => handleTimerClick()}
                     >Set timer</button>
@@ -85,10 +90,20 @@ function FunctionDetails({ func, device }) {
                         value={"off"}
                         onClick={e => setTimerState(e.target.value)}>Deactivate</button>
                     {
-                        func?.activateEventId && <p>Activates at {func?.activateEventTriggerTime}</p>
+                        func?.timer?.on?.eventId && 
+                        <div>
+                            <p>Activates at {func?.activateEventTriggerTime}</p>
+                            <span className={styles.removeButton}
+                                onClick={() => handleDeleteBtonClick()}>X</span>
+                        </div>
                     }
                     {
-                        func?.deactivateEventId && <p>Deactivates at {func?.deactivateEventTriggerTime}</p>
+                        func?.timer?.off?.eventId && 
+                        <div>
+                            <p>Deactivates at {func?.deactivateEventTriggerTime}</p>
+                            <span className={styles.removeButton}
+                                onClick={() => handleDeleteBtonClick()}>X</span>
+                        </div>
                     }
                 </div>
             }
