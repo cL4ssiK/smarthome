@@ -1,6 +1,13 @@
 import { Device } from "../devices/Device.js";
+import { Devices } from "../devices/Devices.js";
 
-
+/**
+ * Handles websocket communication between server and IoT device.
+ * @param {WebSocket} ws 
+ * @param {Object} req 
+ * @param {Devices} devices 
+ * @param {Set} clients 
+ */
 function handleDeviceConnection(ws, req, devices, clients) {
     /**
      * Message structure:
@@ -25,7 +32,6 @@ function handleDeviceConnection(ws, req, devices, clients) {
 
         if (data.type === "register") {
           const device = new Device(data.device_id, data?.payload?.functions);
-          console.log(data.payload.functions);
           device.connect(ws);
           data?.payload?.functions.forEach(func => device.changeFunctionState(func.initialstate, func.code));
 
@@ -70,21 +76,43 @@ function handleDeviceConnection(ws, req, devices, clients) {
   });
 }
 
+
+/**
+ * "Dictionary" of available functions matching command types.
+ */
+const functionalities = {
+        command: handleCommand,
+        timedcommand: handleTimedCommand,
+        removetimer: handleRemoveTimer,
+        remove: handleRemoveDevice,
+      };
+
+
 //TODO: fix the issue that deviceupdate is only sent if state changes on timed call.
+/**
+ * Handles websocket communication between server and client.
+ * @param {WebSocket} ws 
+ * @param {Object} req 
+ * @param {Set} clients 
+ * @param {Devices} devices 
+ */
 function handleClientConnection(ws, req, clients, devices) {
     ws.on("message", msg => {
-        const data = JSON.parse(msg);
-        if (data.type === "command") {
-          handleCommand(devices, data);
-          sendDeviceUpdate(clients);
-        }
-        else if (data.type == "remove") {
-          const payload = data.payload;
-          const device_id = payload?.id;
-          devices.remove(device_id);
-          console.log("Device " + device_id + " removed");
-          sendDeviceUpdate(clients);
-        }
+      const data = JSON.parse(msg);
+      
+      const errMsg = verifyData(data);
+      if (errMsg) {
+        ws.send(JSON.stringify(errMsg));
+        return;
+      }
+
+      const func = functionalities[data.type];
+      const payload = data.payload;
+      const device = devices.findById(data.payload.id);
+      //Hacky fix for device removal. Refactor later?
+      func == handleRemoveDevice ? func(devices, payload) : func(device, payload);
+      
+      sendDeviceUpdate(clients);
     });
 
     ws.on("close", () => {
@@ -104,6 +132,10 @@ function handleClientConnection(ws, req, clients, devices) {
 }
 
 
+/**
+ * Send signal to fetch updated device list to every client.
+ * @param {Set} clients Set of client websocket connections.
+ */
 function sendDeviceUpdate(clients) {
   const obj = {
     type: "deviceupdate",
@@ -111,32 +143,77 @@ function sendDeviceUpdate(clients) {
   clients.forEach(client => client.send(JSON.stringify(obj)));
 }
 
-function handleCommand(devices, data) {
-  const payload = data.payload;
-  const device_id = payload?.id;
-  const command_code = payload?.code;
-  const timer = payload?.timer;
 
-  // in case of missing data, send error to client
-  if (!(device_id && command_code)) {
-      const object = {
+/**
+ * Verifies if received data is in correct format.
+ * @param {Object} data 
+ * @returns Object containing error state or null if all okay.
+ */
+function verifyData(data) {
+  const payload = data.payload;
+  const type = data.type;
+  const device_id = payload?.id;
+
+  let errorObj = null;
+
+  if (!(device_id && type)) {
+      errorObj = {
           type: "functionstate",
           payload: {
-              state: "err"
+            state: "err"
           }
       };
-      ws.send(JSON.stringify(object));
   }
+  return errorObj;
+}
 
-  // if all good, proceed to forwarding command code to device.
-  const device = devices.findById(device_id);
-  if (timer) {
-    //TODO: backend validation
-    device.set_timer(command_code, timer.time, timer.timeS, timer.type);
-  }
-  else {
-    device.send_command(command_code);
-  }
+
+/**
+ * Handles forwarding basic command to device.
+ * @param {Device} device 
+ * @param {Object} payload 
+ */
+function handleCommand(device, payload) {
+  const command_code = payload?.code;
+  device.send_command(command_code);
+}
+
+
+/**
+ * Handles setting up timer for command.
+ * @param {Device} device 
+ * @param {Object} payload 
+ */
+function handleTimedCommand(device, payload) {
+  const command_code = payload?.code;
+  const time = payload?.time;
+  const timeS = payload?.timeS;
+  const type = payload?.type;
+
+  //TODO: backend validation
+  device.set_timer(command_code, time, timeS, type);
+}
+
+
+/**
+ * Handles cancelling set timer.
+ * @param {Device} device 
+ * @param {Object} payload 
+ */
+function handleRemoveTimer(device, payload) {
+  device.remove_timer(payload.code, payload.type);
+}
+
+
+/**
+ * Handles removal of device from server memory.
+ * @param {Devices} devices 
+ * @param {Object} payload 
+ */
+function handleRemoveDevice(devices, payload) {
+  const device_id = payload?.id;
+  devices.remove(device_id);
+  console.log("Device " + device_id + " removed");
 }
 
 export { handleDeviceConnection, handleClientConnection };

@@ -27,8 +27,14 @@ class Device {
 
     set_timer(command, time, timeS, type) {
         const func = this.functions[command];
-        if (!(func instanceof TimedFunction)) { return }
+        if (!(func instanceof TimedFunction)) { return; }
         func.setTimer(time, timeS, type, this.connection);
+    }
+
+    remove_timer(command, type) {
+        const func = this.functions[command];
+        if (!(func instanceof TimedFunction)) { return; }
+        func.cancelTimer(type);
     }
 
     changeFunctionState(state, code) {

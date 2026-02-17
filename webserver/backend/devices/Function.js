@@ -27,11 +27,16 @@ class TimedFunction extends Function{
     constructor(code, name="") {
         super(code, name);
 
-        this.activateEventId = null;
-        this.activateEventTriggerTime = null;
-
-        this.deactivateEventId = null;
-        this.deactivateEventTriggerTime = null;
+        this.timer = {
+            on: {
+                eventId: null,
+                eventTriggerTime: null,
+            },
+            off: {
+                eventId: null,
+                eventTriggerTime: null,
+            }
+        };
     }
 
     /**
@@ -42,52 +47,31 @@ class TimedFunction extends Function{
      */
     setTimer(time, timeS, type, ws) {
         const durationMs = timeS*1000;
+
         // Only allow function to be timed once for safety.
-        if (type === "on" && this.activateEventId) {
-            this.cancelTimer(this.activateEventId, type);
+        if (this.timer[type]?.eventId) {
+            this.cancelTimer(type);
         }
-        if (type === "off" && this.deactivateEventId) {
-            this.cancelTimer(this.deactivateEventId, type);
-        }
+        
+        const timeoutObj = setTimeout(() => {
+            // If function is already at decireable state, do nothing.
+            if (!(this.active === "err" || this.active === type)) this.execute(ws);
+            this.timer[type].eventId = null;
+            this.timer[type].eventTriggerTime = null;
+        }, durationMs);
 
-        if (type === "on") {
-            const timeoutObj = setTimeout(() => {
-                // If function is already at decireable state, do nothing.
-                if (!(this.active === "err" || this.active === type)) this.execute(ws);
-                this.activateEventId = null;
-                this.activateEventTriggerTime = null;
-            }, durationMs);
-
-            this.activateEventId = timeoutObj[Symbol.toPrimitive]('number');
-            this.activateEventTriggerTime = time;
-            console.log(`${type} timer set at: ${time}`);
-        }
-        else if (type === "off") {
-            const timeoutObj = setTimeout(() => {
-                // If function is already at decireable state, do nothing.
-                if (!(this.active === "err" || this.active === type)) this.execute(ws);
-                this.deactivateEventId = null;
-                this.deactivateEventTriggerTime = null;
-            }, durationMs);
-    
-            this.deactivateEventId = timeoutObj[Symbol.toPrimitive]('number');
-            this.deactivateEventTriggerTime = time;
-            console.log(`${type} timer set at: ${time}`);
-        }
+        this.timer[type].eventId = timeoutObj[Symbol.toPrimitive]('number');
+        this.timer[type].eventTriggerTime = time;
+        console.log(`${type} timer set at: ${time}`);
     }
 
-    cancelTimer(eventId, type) {
-        if (eventId) {
-            clearTimeout(eventId);
-            if (type === "on") {
-                this.activateEventId = null;
-                this.activateEventTriggerTime = null;
-            }
-            else if (type === "off"){
-                this.deactivateEventId = null;
-                this.deactivateEventTriggerTime = null;
-            }
-        }
+    cancelTimer(type) {
+        const eventId = this.timer[type]?.eventId;
+        if (!eventId) return;
+        
+        clearTimeout(eventId);
+        this.timer[type].eventId = null;
+        this.timer[type].eventTriggerTime = null; 
     }
 
     isTimerActive() {
