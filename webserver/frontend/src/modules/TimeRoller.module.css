@@ -1,0 +1,54 @@
+:root {
+  --item-h: 40px;
+  --container-h: 100px; /* Cuts off top/bottom items */
+}
+
+.rollercontainer {
+  height: var(--container-h); 
+  overflow-y: scroll;
+  scroll-snap-type: y proximity;
+  /* This creates a "friction" feel—adjusting this is how you tune sensitivity */
+  scroll-behavior:calc(); 
+  position: relative;
+  scrollbar-width: none;
+  
+  /* Keep your existing mask */
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #181a17 40%,
+    #181a17 60%,
+    transparent
+  );
+}
+
+.rolleritem {
+  height: var(--item-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  scroll-snap-align: center;
+  
+  /* CHANGE THIS: 'normal' allows flicking past multiple items */
+  scroll-snap-stop: normal; 
+  
+  font-size: 2.2rem;
+  color: #5efe6b;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.rollerpadding {
+  /* This ensures the center alignment for a 100px container */
+  height: 30px; 
+}
+
+.rollerselectionoverlay {
+  position: absolute;
+  top: 30px; /* Matches padding */
+  left: 0;
+  right: 0;
+  height: var(--item-h);
+  border-top: 1px solid rgba(204, 204, 204, 0.2);
+  border-bottom: 1px solid rgba(204, 204, 204, 0.2);
+  pointer-events: none;
+}

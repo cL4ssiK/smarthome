@@ -1,0 +1,48 @@
+.firstRow {
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    z-index: 2;
+}
+
+.firstRow::before {
+    content: "";
+    flex: 1; /* Takes up equal space as the right side */
+}
+
+.textElement {
+    margin: 0;
+    flex: 0 0 auto; /* Don't grow, don't shrink */
+    text-align: center;
+}
+
+.rightSection {
+    flex: 1; /* Takes up equal space as the left spacer */
+    display: flex;
+    justify-content: center; /* Centers the X in the "leftover" space */
+}
+
+.removeButton {
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 50%;
+    background-color: #5efe6b;
+    line-height: 0;
+
+    font-size: large;
+    font-weight: bold;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /**position: absolute;
+    top: 5px;
+    right: 5px;*/
+    cursor: pointer;
+    color: #181a17;
+    z-index: 3;
+}
