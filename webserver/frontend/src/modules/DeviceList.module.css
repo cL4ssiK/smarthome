@@ -12,6 +12,8 @@ h3 {
 
 .commonBox {
     margin: 2em;
+    padding-top: 1em;
+    padding-bottom: 1em;
     border: 2px #5efe6b solid; 
     display: flex;
     flex-direction: column;

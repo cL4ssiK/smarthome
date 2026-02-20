@@ -1,9 +1,10 @@
 import { Function, TimedFunction } from "./Function.js";
 
 class Device {
-    constructor(device_id, functions, name="") {
+    constructor(device_id, functions, type="", name="") {
         this.name = name;
         this.device_id = device_id;
+        this.type = type;
         this.connection = null;
         this.active = false;
         this.functions = this.#deviceFunctionsProvider(functions);

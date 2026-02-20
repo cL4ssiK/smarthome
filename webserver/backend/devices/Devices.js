@@ -42,6 +42,7 @@ class Devices {
             deviceArray.push({
                 id: id,
                 name: device.name,
+                type: device.type,
                 functions: funcs,
                 active: device.active,
             });

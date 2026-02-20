@@ -2,6 +2,7 @@ import { useContext, useState, useEffect, Fragment } from "react";
 import { DeviceContext} from "../context/DeviceContext";
 import { WebSocketContext } from "../context/WebSocketContext";
 import { DeviceFunctionsForm } from "./deviceFunctionsForm";
+import { TextAndButton } from "./TextAndButton";
 import styles from "./DeviceList.module.css";
 import { ReactComponent as CoffeemakerIMG } from "../images/coffeemakerFallout4.svg";
 
@@ -61,16 +62,14 @@ function DeviceList() {
                         ${deviceFunctions.find(elem => elem.id == device.id)?.toggled ? 
                             styles.deviceCardfuncOn : styles.deviceCardfuncOff}`}
                         onClick={device.active ? () => handleClick(device.id) : undefined}>
-                        <div className={styles.firstRow}>
-                            <h3>{device.name == "" ? "Device " + i : device.name.toUpperCase()}</h3>
-                            <div className={styles.rightSection}>
-                                <span className={styles.removeButton}
-                                    onClick={() => handleRemoveBtonClick(device.id)}>X</span>
-                            </div>
-                        </div>
+                        <TextAndButton
+                            symbol="X"
+                            text={device.name == "" ? (device.type ? device.type.toUpperCase() : "Device " + (i + 1)) : device.name.toUpperCase()}
+                            handleBtonClick={() => handleRemoveBtonClick(device.id)}
+                        ></TextAndButton>
                         {(() => {
-                            const Icon = icons[device.name];
-                            return <Icon className={iconStyles[device.name]} />;
+                            const Icon = icons[device.type];
+                            return <Icon className={iconStyles[device.type]} />;
                         })()}
                         <p>{device.active ? "on" : "off"}</p>
                     </div>

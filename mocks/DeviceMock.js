@@ -41,6 +41,7 @@ function newMockDevice(funcs) {
             type: "register",
             device_id: "mock_1",
             payload: {
+                devicetype: "coffeemaker",
                 functions: functions
             }
         };
