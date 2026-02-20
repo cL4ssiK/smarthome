@@ -3,6 +3,7 @@ import { DeviceContext} from "../context/DeviceContext";
 import { WebSocketContext } from "../context/WebSocketContext";
 import { DeviceFunctionsForm } from "./deviceFunctionsForm";
 import styles from "./DeviceList.module.css";
+import { ReactComponent as CoffeemakerIMG } from "../images/coffeemakerFallout4.svg";
 
 function DeviceList() {
     const devicesContext = useContext(DeviceContext);
@@ -10,7 +11,12 @@ function DeviceList() {
 
     const [deviceFunctions, setDeviceFunctions] = useState([]);
 
-    const [selectedFunction, setSelectedFunction] = useState(null);
+    const icons = {
+        coffeemaker: CoffeemakerIMG,
+    };
+    const iconStyles = {
+        coffeemaker: styles.coffeemakerIMG,
+    };
 
     useEffect(() => {
         if (!devicesContext.devices) return;
@@ -55,9 +61,17 @@ function DeviceList() {
                         ${deviceFunctions.find(elem => elem.id == device.id)?.toggled ? 
                             styles.deviceCardfuncOn : styles.deviceCardfuncOff}`}
                         onClick={device.active ? () => handleClick(device.id) : undefined}>
-                        <span className={styles.removeButton}
-                                onClick={() => handleRemoveBtonClick(device.id)}>X</span>
-                        <h3>{device.name == "" ? "Device " + i : device.name}</h3>
+                        <div className={styles.firstRow}>
+                            <h3>{device.name == "" ? "Device " + i : device.name.toUpperCase()}</h3>
+                            <div className={styles.rightSection}>
+                                <span className={styles.removeButton}
+                                    onClick={() => handleRemoveBtonClick(device.id)}>X</span>
+                            </div>
+                        </div>
+                        {(() => {
+                            const Icon = icons[device.name];
+                            return <Icon className={iconStyles[device.name]} />;
+                        })()}
                         <p>{device.active ? "on" : "off"}</p>
                     </div>
                     <div className={`${styles.commonBox} 

@@ -1,25 +1,34 @@
 import { useContext, useEffect, useState } from "react";
 import { WebSocketContext } from "../context/WebSocketContext";
 import { DeviceContext } from "../context/DeviceContext";
+import { TimeRoller } from "./TimeRoller.jsx";
+import { TextAndButton } from "./TextAndButton.jsx";
 import styles from "./FunctionDetails.module.css";
 
-function FunctionDetails({ func, device }) {
+function FunctionDetails({ func, device, handleReturnBtonClick }) {
 
     const wsContext = useContext(WebSocketContext);
     const deviceContext = useContext(DeviceContext);
 
     const [funcState, setfuncState] = useState(func.active);
-    const [timerTime, setTimerTime] = useState("");
+    const [timerHour, setTimerHour] = useState("");
+    const [timerMinute, setTimerMinute] = useState("");
     const [timerErr, setTimerErr] = useState("");
-    const [timerState, setTimerState] = useState("");
+
+    const hours = Array.from({ length: 24 }, (_, i) => 
+        i.toString().padStart(2, '0')
+    ); 
+    const minutes = Array.from({ length: 60 }, (_, i) => 
+        i.toString().padStart(2, '0')
+    );
 
     const handleClick = (value) => {
         wsContext.sendCommand(device.id, value);
     };
 
-    const handleTimerClick = () => {
+    const handleTimerClick = (type) => {
         if (timerErr) return;
-        if (timerTime === "") {
+        if (timerHour === "" || timerMinute === "") {
             setTimerErr("No time specified.");
             return;
         }
@@ -27,36 +36,22 @@ function FunctionDetails({ func, device }) {
         const now = new Date();
         const currentTimeS = now.getHours()*60*60 + now.getMinutes()*60 + now.getSeconds();
 
-        const [h, m] = timerTime.split(':').map(val => parseInt(val));
+        const h = parseInt(timerHour);
+        const m = parseInt(timerMinute);
+
         const timerTimeS = h*60*60 + m*60;
 
-        const timerInterval = timerTimeS - currentTimeS > 0 ? timerTimeS - currentTimeS : timerTimeS - currentTimeS + 24*60;
+        const timerInterval = ((timerTimeS - currentTimeS) > 0) ? timerTimeS - currentTimeS : timerTimeS - currentTimeS + 24*60*60;
 
-        console.log(timerInterval);
-        console.log(`${timerState} timer set at: ${timerTime}`);
+        console.log("hello???", timerInterval);
+        console.log(`${type} timer set at: ${timerHour}:${timerMinute}`);
 
-        wsContext.sendTimerEvent(device.id, func.code, timerState, timerTime, timerInterval);
+        wsContext.sendTimerEvent(device.id, func.code, type, `${timerHour}:${timerMinute}`, timerInterval);
     };
 
-    const handleDeleteBtonClick = () => {
-        wsContext.removeTimerEvent(device.id, func.code, timerState);
+    const handleDeleteBtonClick = (type) => {
+        wsContext.removeTimerEvent(device.id, func.code, type);
     }
-
-    const validateTimer = (time) => {
-        let errMsg = "";
-        if (time === "") {
-            setTimerErr("");
-            return;
-        }
-        let [h, m] = time.split(':');
-        h = parseInt(h);
-        m = parseInt(m);
-        if (isNaN(h) || isNaN(m)) errMsg = "Hour or minute is not a number.";
-        else if (h < 0 || h > 23) errMsg = "Hour needs to be between 0 and 23.";
-        else if (m < 0 || m > 59) errMsg = "Minute needs to be between 0 and 59.";
-        else if (timerState !== "on" && timerState !== "off") errMsg = "Select state to time.";
-        setTimerErr(errMsg);
-    };
 
     //TODO: maybe only use the context, might be better way idk.
     useEffect(() => {
@@ -64,46 +59,59 @@ function FunctionDetails({ func, device }) {
         setfuncState(fs);
     }, [deviceContext]);
 
-    useEffect(() => {
-        validateTimer(timerTime);
-    }, [timerTime, timerState]);
-
     // add timer
     return (
-        <div>
-            <h2>{func?.name}</h2>
-            <button onClick={() => handleClick(func?.code)}>{funcState === "on" ? "Deactivate" : "Activate"}</button>
+        <div className={styles.frame}>
+            <TextAndButton 
+                symbol="↩"
+                text={func?.name.toUpperCase()}
+                handleBtonClick={() => handleReturnBtonClick()}
+            ></TextAndButton>
+            <button onClick={() => handleClick(func?.code)}>{funcState === "on" ? "DEACTIVATE" : "ACTIVATE"}</button>
             {
                 func.timer !== undefined &&
-                <div>
-                    <button onClick={() => handleTimerClick()}
-                    >Set timer</button>
-                    <input 
-                        value={timerTime}
-                        onChange={e => setTimerTime(e.target.value)}
-                        placeholder="HH:MM"></input>
-                    <p>{timerErr}</p>
-                    <button
-                        value={"on"}
-                        onClick={e => setTimerState(e.target.value)}>Activate</button>
-                    <button
-                        value={"off"}
-                        onClick={e => setTimerState(e.target.value)}>Deactivate</button>
+                <div className={styles.timer}>
+                    <div className={styles.timerollerDiv}>
+                        <TimeRoller
+                            options={hours}
+                            onSelect={setTimerHour}>
+                        </TimeRoller>
+                        <span>:</span>
+                        <TimeRoller
+                            options={minutes}
+                            onSelect={setTimerMinute}>
+                        </TimeRoller>
+                    </div>
+                    {
+                        timerErr && <p>{timerErr}</p>
+                    }
+                    <div className={styles.timerButtonsDiv}>
+                        <button
+                            value={"on"}
+                            onClick={e => handleTimerClick(e.target.value)}>ACTIVATE</button>
+                        <button
+                            value={"off"}
+                            onClick={e => handleTimerClick(e.target.value)}>DEACTIVATE</button>
+                    </div>
                     {
                         func?.timer?.on?.eventId && 
-                        <div>
-                            <p>Activates at {func?.activateEventTriggerTime}</p>
-                            <span className={styles.removeButton}
-                                onClick={() => handleDeleteBtonClick()}>X</span>
-                        </div>
+                        <TextAndButton 
+                            as="p"
+                            symbol="X"
+                            text={`Activates at ${func?.timer?.on?.eventTriggerTime}`}
+                            value="on"
+                            handleBtonClick={e => handleDeleteBtonClick(e.target.dataset.value)}
+                        ></TextAndButton>
                     }
                     {
                         func?.timer?.off?.eventId && 
-                        <div>
-                            <p>Deactivates at {func?.deactivateEventTriggerTime}</p>
-                            <span className={styles.removeButton}
-                                onClick={() => handleDeleteBtonClick()}>X</span>
-                        </div>
+                        <TextAndButton 
+                            as="p"
+                            symbol="X"
+                            text={`Deactivates at ${func?.timer?.off?.eventTriggerTime}`}
+                            value="off"
+                            handleBtonClick={e => handleDeleteBtonClick(e.target.dataset.value)}
+                        ></TextAndButton>
                     }
                 </div>
             }

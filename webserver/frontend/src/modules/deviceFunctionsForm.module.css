@@ -1,10 +1,18 @@
 .functionRow {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 0.5em;
+  /*gap: 8px;
+  margin: 0.5em;*/
 }
 
+.outerDiv {
+  min-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/**
 .statusDot {
   width: 15px;
   height: 15px;
@@ -23,4 +31,41 @@
 
 .error {
     background-color: #f44336;
+}
+*/
+
+button {
+  background: #181a17;
+  border: solid #5efe6b 2px;
+  color: #5efe6b;
+  min-width: 200px;
+  min-height: 40px;
+  font-size: large;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 1em 0 1em 0em;
+}
+
+.active {
+  background: #5efe6b;
+  color: #181a17;
+}
+
+.removeButton {
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 50%;
+    background-color: #5efe6b;
+    line-height: 0;
+
+    font-size: large;
+    font-weight: bold;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+    color: #181a17;
+    z-index: 3;
 }

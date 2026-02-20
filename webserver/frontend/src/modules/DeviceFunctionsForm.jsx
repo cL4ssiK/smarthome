@@ -18,21 +18,20 @@ function DeviceFunctionsForm({ device }) {
   };
 
   return (
-        <div key={device.id}>
+        <div key={device.id} className={styles.outerDiv}>
           {
-            activeFunctionCode ?
-            (<div>
-              <span className={styles.removeButton}
-                onClick={() => handleReturnBtonClick()}>X</span>
+            activeFunctionCode ? (
               <FunctionDetails
                 device={device}
-                func={device?.functions?.find(func => func.code === activeFunctionCode)}>
+                func={device?.functions?.find(func => func.code === activeFunctionCode)}
+                handleReturnBtonClick={handleReturnBtonClick}>
               </FunctionDetails>
-            </div>) : 
+              ) : 
             (device.functions.map(func => {
               return (
               <div key={func.code} className={styles.functionRow}>
-                <button onClick={() => handleClick(func.code)}>{func.name}</button>
+                <button onClick={() => handleClick(func.code)}
+                  className={func.active == "on" ? styles.active : ""}>{func.name.toUpperCase()}</button>
                 <span
                   className={`${styles.statusDot} ${
                   func.active == "on" ? styles.active : ( func.active == "off" ? styles.inactive : styles.error )}`}/>

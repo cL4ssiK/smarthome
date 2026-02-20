@@ -10,7 +10,7 @@ function App() {
       <DeviceProvider>
         <div className="App">
           <header className="App-header">
-            <h1>Käytettävissä olevat laitteet</h1>
+            <h1>YOUR DEVICES</h1>
           </header>
           <DeviceList>
           </DeviceList>
