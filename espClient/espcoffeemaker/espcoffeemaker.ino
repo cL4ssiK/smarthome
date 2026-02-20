@@ -12,22 +12,27 @@ typedef struct {
     byte code;
     const char* name;
     bool state;
+    bool allowTimer;
 } Func;
 
-const char* ssid = "XXXXXX";
-const char* pass = "XXXXXX";
+const char* ssid = "xxxx";
+const char* pass = "xxxx";
 const char* serverIP = "xxx.xxx.xxx.xxx";
-const int serverPort = 1234;
-const char* deviceId = "xxx";
+const int serverPort = 1234; 
+const char* deviceId = "esp32-001";
+const char* deviceType = "coffeemaker";
 
 volatile bool heaterFlag = false;
+bool connection = false;
+bool ledState = LOW;
+unsigned long long lastMillis = millis();
 
 WebSocketsClient webSocket;
 JsonDocument doc_rx;
 JsonDocument doc_tx;
 
 Func funcNames[] = {
-  Func{1, "Brew coffee", HIGH}
+  Func{1, "Brew coffee", HIGH, true}
 };
 
 /**
@@ -112,6 +117,7 @@ Disconnect:
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
   if(type == WStype_CONNECTED) {
     Serial.println("Connected to server");
+    connection = true;
     digitalWrite(LED_PIN, HIGH);
 
     doc_tx.clear();
@@ -124,8 +130,11 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
       JsonObject obj = functions.createNestedObject();
       obj["code"] = funcNames[i].code;
       obj["name"] = funcNames[i].name;
+      obj["allowtimer"] = funcNames[i].allowTimer;
       obj["initialstate"] = !funcNames[i].state ? "on" : "off";
     }
+
+    doc_tx["payload"]["devicetype"] = deviceType;
 
     String json;
     serializeJson(doc_tx, json);
@@ -150,6 +159,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
   }
   else if(type == WStype_DISCONNECTED) {
     Serial.println("Disconnected!");
+    connection = false;
     digitalWrite(LED_PIN, LOW);
   }
 }
@@ -170,6 +180,8 @@ void setup() {
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
+    ledState = !ledState;
+    digitalWrite(LED_PIN, ledState);
   }
   Serial.println("\nWiFi connected");
   webSocket.begin(serverIP, serverPort, "/ws/iot");
@@ -177,7 +189,13 @@ void setup() {
   webSocket.setReconnectInterval(5000); // auto reconnect every 5s
 }
 
+//TODO: Replace the simple led blinking with timed interrupt. This way led blinks constantly, even with websocket.loop() function.
 void loop() {
   webSocket.loop(); // must call frequently
   readMachineState();
+  if (!connection && millis() - lastMillis >= 500) {
+    lastMillis = millis();
+    digitalWrite(LED_PIN, ledState);
+    ledState = !ledState;
+  }
 }
