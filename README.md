@@ -32,6 +32,12 @@ Modded commercial coffeemaker
 - User can trigger the coffeemaker on/off from UI.
 - Coffeemaker connects automatically to server and reveals its function interface.
 
+### Version 1.1
+- User can set timer to activate device function.
+- User can set timer to deactivate device function.
+- Fallout 4 inspired theme
+- Device decides automatically if timer is allowed or not.
+
 ### Version 2.0
 Improved version of the server mainly concentrating on security
 #### 1. User interface
@@ -77,3 +83,4 @@ npm run start
 ```bash
 npm run stop
 ```
+
