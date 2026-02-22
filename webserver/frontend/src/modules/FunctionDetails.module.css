@@ -70,3 +70,8 @@
     display: flex;
     justify-content: center; /* Centers the X in the "leftover" space */
 }
+
+.active {
+  background: #5efe6b;
+  color: #181a17;
+}

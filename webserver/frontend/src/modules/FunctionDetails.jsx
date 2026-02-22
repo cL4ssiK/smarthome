@@ -67,7 +67,8 @@ function FunctionDetails({ func, device, handleReturnBtonClick }) {
                 text={func?.name.toUpperCase()}
                 handleBtonClick={() => handleReturnBtonClick()}
             ></TextAndButton>
-            <button onClick={() => handleClick(func?.code)}>{funcState === "on" ? "DEACTIVATE" : "ACTIVATE"}</button>
+            <button className={func.active == "on" ? styles.active : ""}
+                onClick={() => handleClick(func?.code)}>{funcState === "on" ? "DEACTIVATE" : "ACTIVATE"}</button>
             {
                 func.timer !== undefined &&
                 <div className={styles.timer}>
