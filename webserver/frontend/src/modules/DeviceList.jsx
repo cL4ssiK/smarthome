@@ -27,7 +27,7 @@ function DeviceList() {
                 const prevToggleState = prevDeviceFunctions?.find(f => f.id == device.id);
                 return { 
                     id: device.id, 
-                    toggled: prevToggleState? prevToggleState.toggled : false 
+                    toggled: prevToggleState && device?.active ? prevToggleState.toggled : false 
                 };
             })
         );
