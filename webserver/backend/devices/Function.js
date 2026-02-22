@@ -17,6 +17,17 @@ class Function {
         }
     }
 
+    askState(websocket) {
+        const object = {
+            type: "state",
+            payload: { command: this.code }
+        }
+        
+        if (object && websocket) {
+            websocket.send(JSON.stringify(object));
+        }
+    }
+
     setState(state) {
         this.active = state;
     }
@@ -56,6 +67,7 @@ class TimedFunction extends Function{
         const timeoutObj = setTimeout(() => {
             // If function is already at decireable state, do nothing.
             if (!(this.active === "err" || this.active === type)) this.execute(ws);
+            else if (this.active === type) this.askState(ws);
             this.timer[type].eventId = null;
             this.timer[type].eventTriggerTime = null;
         }, durationMs);
