@@ -11,6 +11,10 @@ Server side is running on node.js and the rest api portion is handled by express
 Frontend is made with react.
 For the embedded system(s) I'm currently using ESP-32 dev board and programming it using Arduino framework.
 
+### Demo
+Clicking the image redirects to my Youtube channel for short demonstration of the project at version 1.1.
+[![Smarthome Hub UI](https://img.youtube.com/vi/Gel0ib0Yjqg/0.jpg)](https://youtu.be/Gel0ib0Yjqg)
+
 ### Version 1.0
 For version 1.0 the definition of done features are quite simple. Only basic functionalities to create something working and intuitive to use.
 Automated testing on this version is not comprehensive. Some front end functionality tests have been automated.
@@ -49,8 +53,6 @@ Improved version of the server mainly concentrating on security
 #### 3. Devices
 - Devices deserve their own repositories tbh...
 
-### Demo
-Coming...
 
 ## Setup (first time)
 If not already, install [Docker](https://www.docker.com/) and [Node.js](https://nodejs.org/en/download/current).
@@ -83,4 +85,5 @@ npm run start
 ```bash
 npm run stop
 ```
+
 
