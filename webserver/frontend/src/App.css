@@ -1,11 +1,40 @@
-header {
-    text-align: center;
-}
-
 html {
-    background: #181a17;
+    background: var(--bg-primary);
 }
 
 h1 {
-    color: #5efe6b;
+    color: var(--features);
+}
+
+
+.scanlines {
+  position: fixed; /* Stays put even when scrolling */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999; /* Sits on top of everything */
+  pointer-events: none; /* Crucial: lets you click buttons underneath */
+  
+  background:
+  radial-gradient(
+      circle, 
+      #00000000 60%, 
+      #000000ff 130%
+    ), 
+  linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.15) 50%
+  );
+  background-size: 100% 4px;
+
+  mix-blend-mode: multiply;
+
+  animation: scanline-flicker 0.2s infinite;
+}
+
+@keyframes scanline-flicker {
+  0% { opacity: 0.98; }
+  50% { opacity: 1; }
+  100% { opacity: 0.98; }
 }

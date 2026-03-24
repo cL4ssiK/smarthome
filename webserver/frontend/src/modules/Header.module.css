@@ -1,0 +1,11 @@
+.btonContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.btonContainer p {
+    margin: 0 1em 0 1em;
+    cursor: pointer;
+}

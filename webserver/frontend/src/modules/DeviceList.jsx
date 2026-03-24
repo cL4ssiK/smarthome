@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, Fragment } from "react";
+import { useContext, useState, useEffect } from "react";
 import { DeviceContext} from "../context/DeviceContext";
 import { WebSocketContext } from "../context/WebSocketContext";
 import { DeviceFunctionsForm } from "./deviceFunctionsForm";
@@ -53,6 +53,9 @@ function DeviceList() {
 
     return (
         <div>
+            <header>
+                <h1>YOUR DEVICES</h1>
+            </header>
             {devicesContext.devices?.map((device, i) => (
                 <div key={device.id}
                     className={styles.deviceDiv}>

@@ -35,9 +35,9 @@
 */
 
 button {
-  background: #181a17;
-  border: solid #5efe6b 2px;
-  color: #5efe6b;
+  background: var(--bg-primary);
+  border: solid var(--features) 2px;
+  color: var(--features);
   min-width: 200px;
   min-height: 40px;
   font-size: large;
@@ -47,15 +47,15 @@ button {
 }
 
 .active {
-  background: #5efe6b;
-  color: #181a17;
+  background: var(--features);
+  color: var(--bg-primary);
 }
 
 .removeButton {
     width: 1.5em;
     height: 1.5em;
     border-radius: 50%;
-    background-color: #5efe6b;
+    background-color: var(--features);
     line-height: 0;
 
     font-size: large;
@@ -66,6 +66,6 @@ button {
     align-items: center;
 
     cursor: pointer;
-    color: #181a17;
+    color: var(--bg-primary);
     z-index: 3;
 }

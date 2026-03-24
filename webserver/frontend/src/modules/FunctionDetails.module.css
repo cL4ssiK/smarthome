@@ -9,7 +9,7 @@
     width: 1.5em;
     height: 1.5em;
     border-radius: 50%;
-    background-color: #5efe6b;
+    background-color: var(--features);
     line-height: 0;
 
     font-size: large;
@@ -20,7 +20,7 @@
     align-items: center;
 
     cursor: pointer;
-    color: #181a17;
+    color: var(--bg-primary);
     z-index: 3;
 }
 
@@ -40,7 +40,7 @@
 }
 .timerollerDiv span {
     font-size: 2.2rem;
-    color: #5efe6b;
+    color: var(--features);
     margin: 0 0.2em 0 0.2em;
 }
 
@@ -72,6 +72,6 @@
 }
 
 .active {
-  background: #5efe6b;
-  color: #181a17;
+  background: var(--features);
+  color: var(--bg-primary);
 }

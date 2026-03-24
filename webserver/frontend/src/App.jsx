@@ -1,19 +1,24 @@
+import { useContext, useState } from 'react';
 import './App.css';
 import { DeviceProvider } from './context/DeviceContext';
 import { WebSocketProvider } from './context/WebSocketContext';
+import { ThemeContext } from './context/ThemeContext';
 import { DeviceList } from './modules/DeviceList';
+import { Header } from './modules/Header';
+import { Settings } from './modules/Settings';
 
 function App() {
+  const themeContext = useContext(ThemeContext);
+  const [view, setView] = useState(0);
+  const views = [<DeviceList/>, <Settings/>];
 
   return (
     <WebSocketProvider>
       <DeviceProvider>
         <div className="App">
-          <header className="App-header">
-            <h1>YOUR DEVICES</h1>
-          </header>
-          <DeviceList>
-          </DeviceList>
+          <Header setView={setView}/>
+          {views[view]}
+          <div className={themeContext.retro ? "scanlines" : ""}></div>
         </div>
       </DeviceProvider>
     </WebSocketProvider>

@@ -29,7 +29,7 @@
     width: 1.5em;
     height: 1.5em;
     border-radius: 50%;
-    background-color: #5efe6b;
+    background-color: var(--features);
     line-height: 0;
 
     font-size: large;
@@ -43,6 +43,6 @@
     top: 5px;
     right: 5px;*/
     cursor: pointer;
-    color: #181a17;
+    color: var(--bg-primary);
     z-index: 3;
 }

@@ -5,8 +5,6 @@ import { FunctionDetails } from "./FunctionDetails";
 
 function DeviceFunctionsForm({ device }) {
 
-  const wsContext = useContext(WebSocketContext);
-
   const [activeFunctionCode, setActiveFunctionCode] = useState(null);
   
   const handleClick = (code) => {
