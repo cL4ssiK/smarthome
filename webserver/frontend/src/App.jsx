@@ -19,6 +19,7 @@ function App() {
           <Header setView={setView}/>
           {views[view]}
           <div className={themeContext.retro ? "scanlines" : ""}></div>
+          <div className={themeContext.scan ? "scanline" : ""}></div>
         </div>
       </DeviceProvider>
     </WebSocketProvider>

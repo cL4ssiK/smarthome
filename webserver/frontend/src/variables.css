@@ -2,10 +2,16 @@
   /* Default light values */
   --bg-primary: #242722;
   --features: #5efe6b;
+  --scanbar-bg: #5efe6b66;
+  --scanbar-shadow: #5efe6b99;
+  --scanbar-shadow-spread: #5efe6b4d;
 }
 
 [data-theme='falloutnewvegas'] {
   /* Dark overrides */
   --bg-primary: #4f4530;
   --features: #ebb556;
+  --scanbar-bg: #ebb55666;
+  --scanbar-shadow: #ebb55699;
+  --scanbar-shadow-spread: #ebb5564d;
 }

@@ -10,10 +10,11 @@ export function ThemeProvider({ children }) {
     ];
 
     const localRetro = localStorage.getItem('data-retro');
+    const localScan = localStorage.getItem('data-scan');
 
     const [theme, setTheme] = useState(JSON.parse(localStorage.getItem('data-theme')) || themes[0]);
     const [retro, setRetro] = useState(localRetro !== null ? JSON.parse(localRetro) : true);
-
+    const [scan, setScan] = useState(localScan !== null ? JSON.parse(localScan) : false);
 
     const toggleTheme = (num) => {
         const newtheme = themes[num];
@@ -24,6 +25,11 @@ export function ThemeProvider({ children }) {
     const toggleRetro = (state) => {
         setRetro(state);
         localStorage.setItem('data-retro', state);
+    };
+
+    const toggleScan = (state) => {
+        setScan(state);
+        localStorage.setItem('data-scan', state);
     };
 
     const getThemes = () => {
@@ -37,7 +43,7 @@ export function ThemeProvider({ children }) {
     }, [theme]);
 
     return (
-        <ThemeContext.Provider value={{ theme, toggleTheme, retro, toggleRetro, getThemes }}>
+        <ThemeContext.Provider value={{ theme, toggleTheme, retro, toggleRetro, getThemes, scan, toggleScan }}>
             {children}
         </ThemeContext.Provider>
     ); 

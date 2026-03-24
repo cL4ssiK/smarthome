@@ -24,6 +24,10 @@ function Settings() {
                         <span className={`${styles.dot} ${themecontext.retro ? styles.active : ""}`}></span>
                         CRT MONITOR
                     </li>
+                    <li key={124} onClick={() => themecontext.toggleScan(!themecontext.scan)}>
+                        <span className={`${styles.dot} ${themecontext.scan ? styles.active : ""}`}></span>
+                        CRT SCAN
+                    </li>
                 </ul>
             </div>
         </div>

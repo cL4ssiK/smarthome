@@ -38,3 +38,33 @@ h1 {
   50% { opacity: 1; }
   100% { opacity: 0.98; }
 }
+
+.scanline {
+  position: fixed; /* Stays in place even if you scroll */
+  left: 0;
+  top: 0;
+  width: 100vw; /* Full screen width */
+  height: 10px; /* thickness of the beam */
+  z-index: 9998;
+  
+  background: linear-gradient(
+    var(--scanbar-bg) 0%,
+    var(--scanbar-shadow) 50%,
+    var(--scanbar-bg) 100%
+  ); /* core */
+  box-shadow: 0 0 15px var(--scanbar-shadow), 
+              0 0 30px var(--scanbar-shadow-spread); /* Spreading glow */
+  
+  pointer-events: none; 
+
+  animation: scan 12s linear infinite;
+}
+
+@keyframes scan {
+  0% { transform: translateY(-20vh); }
+  25% { transform: translateY(120vh); }
+
+  /* wait at the bottom for some time */
+  25.1% { transform: translateY(120vh); }
+  100% { transform: translateY(120vh); }
+}
