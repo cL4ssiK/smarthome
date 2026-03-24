@@ -22,7 +22,7 @@ function Settings() {
                 <ul>
                     <li key={123} onClick={() => themecontext.toggleRetro(!themecontext.retro)}>
                         <span className={`${styles.dot} ${themecontext.retro ? styles.active : ""}`}></span>
-                        CRT style
+                        CRT MONITOR
                     </li>
                 </ul>
             </div>

@@ -3,9 +3,61 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    padding: 0;
+    margin: 1em 2em 1em 2em;
+    border-bottom: 2px solid var(--features);
 }
 
-.btonContainer p {
-    margin: 0 1em 0 1em;
+.btonContainer li {
+    color: var(--features);
+    list-style: none;
+    font-size: x-large;
+    font-weight: bold;
     cursor: pointer;
+
+    padding: 0 10px 0 10px;
+    margin: 0 1em 0 1em;
+}
+
+.btonContainer li.active {
+    /* Create the top and side borders */
+    border: 2px solid var(--features);
+    border-top: 0;
+    border-bottom: 2px solid var(--bg-primary); /* Matches your background color to "hide" the ul line */
+    background-color: var(--bg-primary); /* Must match background to mask the bottom line */
+    bottom: -2px;
+    position: relative;
+    /* Optional: Pip-Boy style corners usually look better slightly wider */
+    margin: 0 5px;
+}
+
+.btonContainer li.active::before,
+.btonContainer li.active::after {
+    content: '';
+    position: absolute;
+    background-color: var(--bg-primary); /* remove half of the border */
+    
+    /* Connect them to the top border */
+    top: 0px;
+    
+    /* Control the thickness (horizontal width of the stub element) */
+    width: 8px;
+    
+    /* control how high the cover border goes */
+    height: 15px; 
+}
+
+/* Position the left partial border */
+.btonContainer li.active::before {
+    /* puts covering borders on top of the border to cover */
+    left: -2px;
+    border-bottom: 2px solid var(--features);
+}
+
+/* Position the right partial border */
+.btonContainer li.active::after {
+    /* puts covering borders on top of the border to cover */
+    right: -2px;
+    /* use bottom border for horizontal line, width locked above */
+    border-bottom: 2px solid var(--features);
 }
