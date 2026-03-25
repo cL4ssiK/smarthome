@@ -37,7 +37,10 @@ function InputTextButton({ symbol, text, value="", handleBtonClick, device_id=""
                 className={styles.input}
                 type="text"
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
+                onChange={(e) => {
+                    if (e.target.value.length <= 14)
+                        setInputValue(e.target.value);
+                }}
                 onKeyDown={handleKeyDown}
                 onBlur={handleUpdate}
                 onClick={e => e.stopPropagation()}
