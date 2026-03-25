@@ -106,8 +106,19 @@ export function WebSocketProvider({ children }) {
         ws?.current?.send(JSON.stringify(obj));
     };
 
+    const renameDevice = (device_id, name) => {
+        const obj = {
+            type: "rename",
+            payload: {
+                id: device_id,
+                name: name,
+            }
+        };
+        ws?.current?.send(JSON.stringify(obj));
+    };
+
   return (
-    <WebSocketContext.Provider value={{ws, wsState, lastEvent, setWsState, sendCommand, sendTimerEvent, removeTimerEvent, removeDevice}}>
+    <WebSocketContext.Provider value={{ws, wsState, lastEvent, setWsState, sendCommand, sendTimerEvent, removeTimerEvent, removeDevice, renameDevice }}>
         {children}
     </WebSocketContext.Provider>
   );

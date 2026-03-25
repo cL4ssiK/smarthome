@@ -85,6 +85,7 @@ const functionalities = {
         timedcommand: handleTimedCommand,
         removetimer: handleRemoveTimer,
         remove: handleRemoveDevice,
+        rename: handleDeviceRename,
       };
 
 
@@ -214,6 +215,22 @@ function handleRemoveDevice(devices, payload) {
   const device_id = payload?.id;
   devices.remove(device_id);
   console.log("Device " + device_id + " removed");
+}
+
+
+/**
+ * Renames device
+ * @param {Device} device 
+ * @param {Object} payload 
+ * @returns 
+ */
+function handleDeviceRename(device, payload) {
+  const oldName = device.name;
+  if (!device.changeName(payload.name)) {
+    console.log("New name is faulty, no renaming.");
+    return;
+  }
+  console.log("Device " + oldName + " renamed to " + payload.name);
 }
 
 export { handleDeviceConnection, handleClientConnection };

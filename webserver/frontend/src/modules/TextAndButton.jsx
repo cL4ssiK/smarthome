@@ -4,7 +4,10 @@ function TextAndButton({ as: Component='h3', symbol, text, value="", handleBtonC
 
     return (
         <div className={styles.firstRow}>
-            <Component className={styles.textElement}>{text}</Component>
+            <Component 
+                className={styles.textElement}>
+                {text}
+            </Component>
             <div className={styles.rightSection}>
                 <span className={styles.removeButton}
                     data-value={value}

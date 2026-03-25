@@ -1,0 +1,71 @@
+.input {
+    /* 1. Reset default appearance */
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+
+    /* 2. Match the H3 exactly */
+    font-family: inherit; /* Or your specific Pip-Boy font */
+    font-size: 2em;    /* This is the standard browser size for h3 */
+    font-weight: bold;
+    text-transform: uppercase;
+
+    background: var(--bg-primary);
+    border: 0;
+    border-bottom: 2px solid var(--features);
+    color: var(--features);
+    z-index: 9996;
+}
+
+.firstRow {
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.firstRow::before {
+    content: "";
+    flex: 1; /* Takes up equal space as the right side */
+}
+
+.textElement {
+    margin: 0;
+    flex: 0 0 auto; /* Don't grow, don't shrink */
+    text-align: center;
+    cursor: pointer;
+    z-index: 9996;
+}
+
+.rightSection {
+    flex: 1; /* Takes up equal space as the left spacer */
+    display: flex;
+    justify-content: center; /* Centers the X in the "leftover" space */
+}
+
+.removeButton {
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 50%;
+    background-color: var(--features);
+    line-height: 0;
+
+    font-size: large;
+    font-weight: bold;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /**position: absolute;
+    top: 5px;
+    right: 5px;*/
+    cursor: pointer;
+    color: var(--bg-primary);
+    z-index: 3;
+}

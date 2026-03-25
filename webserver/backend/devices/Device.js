@@ -42,6 +42,12 @@ class Device {
         this.functions[code].setState(state);
     }
 
+    changeName(name) {
+        if (name === this.name || typeof name !== 'string' || name.trim() === "") return false;
+        this.name = name;
+        return true;
+    }
+
     #deviceFunctionsProvider(functions) {
         const funcs = {};
         functions.forEach(func => {
