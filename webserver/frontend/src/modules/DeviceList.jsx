@@ -75,7 +75,7 @@ function DeviceList() {
                             const Icon = icons[device.type];
                             return <Icon className={iconStyles[device.type]} />;
                         })()}
-                        <p>{device.active ? "on" : "off"}</p>
+                        <p>{device.active ? "CONNECTED" : "DISCONNECTED"}</p>
                     </div>
                     <div className={`${styles.commonBox} 
                         ${deviceFunctions.find(elem => elem.id == device.id)?.toggled ? styles.functionlistOn : styles.functionlistOff}`}>
