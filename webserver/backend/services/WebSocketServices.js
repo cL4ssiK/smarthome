@@ -60,10 +60,8 @@ function handleDeviceConnection(ws, req, devices, clients) {
 
   ws.on("close", () => {
     const device = devices.findByConnection(ws);
-
     if(device) {
-      device?.disconnect();
-      console.log(device.device_id + " disconnected!");
+      devices.disconnect(device);
       sendDeviceUpdate(clients);
     }
 
@@ -78,7 +76,7 @@ function handleDeviceConnection(ws, req, devices, clients) {
     ws.terminate();
     const device = devices.findByConnection(ws);
     
-    device.disconnect();
+    devices.disconnect(device);
     console.log(device.device_id + " disconnected!");
     sendDeviceUpdate(clients);
   });
@@ -215,7 +213,7 @@ function handleRemoveTimer(device, payload) {
 
 
 /**
- * Handles removal of device from server memory.
+ * Handles removal of device from server memory and/or database.
  * @param {Devices} devices 
  * @param {Object} payload 
  */
