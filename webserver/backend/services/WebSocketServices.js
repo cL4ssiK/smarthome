@@ -27,11 +27,19 @@ function handleDeviceConnection(ws, req, devices, clients) {
      *    }
      * }
      */
-    ws.on("message", msg => {
+    ws.on("message", async msg => {
         const data = JSON.parse(msg);
 
         if (data.type === "register") {
-          const device = new Device(data.device_id, data?.payload?.functions, data?.payload?.devicetype);
+          let device = await devices.findById(data.device_id);
+          console.log(device);
+          if (device === null) {
+            device = Device.newDevice(data.device_id, data?.payload?.functions, data?.payload?.devicetype);
+            device.save();
+          }
+          else {
+            device.addFunctions(data?.payload?.functions);
+          }
           device.connect(ws);
           data?.payload?.functions.forEach(func => device.changeFunctionState(func.initialstate, func.code));
           
@@ -42,7 +50,7 @@ function handleDeviceConnection(ws, req, devices, clients) {
         }
         else if (data.type === "functionstate"){
 
-          const device = devices.findById(data.device_id);
+          const device = await devices.findById(data.device_id);
 
           device.changeFunctionState(data.payload?.state, data.func_code);
           
@@ -98,7 +106,7 @@ const functionalities = {
  * @param {Devices} devices 
  */
 function handleClientConnection(ws, req, clients, devices) {
-    ws.on("message", msg => {
+    ws.on("message", async msg => {
       const data = JSON.parse(msg);
       
       const errMsg = verifyData(data);
@@ -109,7 +117,7 @@ function handleClientConnection(ws, req, clients, devices) {
 
       const func = functionalities[data.type];
       const payload = data.payload;
-      const device = devices.findById(data.payload.id);
+      const device = await devices.findById(data.payload.id);
       //Hacky fix for device removal. Refactor later?
       func == handleRemoveDevice ? func(devices, payload) : func(device, payload);
       

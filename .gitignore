@@ -1,11 +1,13 @@
 .env
 node_modules
 build
+generated
 
 # dependencies
 /node_modules
 /.pnp
 .pnp.js
+/generated/prisma
 
 # testing
 /coverage

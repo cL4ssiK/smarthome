@@ -1,8 +1,17 @@
 import { Device } from "./Device.js";
+import prisma from '../database/prisma.js';
 
 class Devices {
     constructor() {
         this.known_devices = new Map();
+    }
+
+    async fetchDevicesFromDb() {
+        const devices = await prisma.device.findMany();
+        devices.forEach(device => {
+            const d = Device.deviceFromDatabase(device);
+            this.add(d);
+        });
     }
 
     size() {
@@ -14,13 +23,25 @@ class Devices {
         this.known_devices.set(device.device_id, device);
     }
 
-    remove(id) {
-        this.findById(id)?.disconnect();
+    async remove(id) {
+        const device = await this.findById(id);
+        device?.disconnect();
+        device.delete();
         this.known_devices.delete(id);
     }
 
-    findById(id) {
-        return this.known_devices.get(id);
+    async findById(id) {
+        let device = this.known_devices.get(id);
+        if (!device) {
+            device = await this.findFromDb(id);
+        }
+        return device ? device : null;
+    }
+
+    async findFromDb(id) {
+        const device = await prisma.device.findFirst({ where: { deviceId: id } });
+        if (!device) return null;
+        return Device.deviceFromDatabase(device);
     }
 
     findByConnection(ws) {

@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "start": "docker compose up -d",
-    "devstart": "docker compose up -d && docker logs -f serverContainer",
+    "devstart": "docker compose up -d && docker exec -it serverContainer npx prisma generate && docker logs -f serverContainer",
+    "devstartRebuild": "docker compose up -d --build --force-recreate",
     "stop": "docker compose down",
     "build": "docker compose build",
-    "build:server": "docker compose build server"
+    "build:server": "docker compose build server",
+    "migrate:dev": "npx prisma db push && npx prisma generate"
   }
 }

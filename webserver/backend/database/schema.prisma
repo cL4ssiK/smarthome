@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+  engineType    = "library"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id  Int  @id @default(autoincrement())
+  username  String  @unique
+  pswd  String
+  role String
+
+  devices UserDevice[]
+  groups UserGroup[]
+}
+
+model Device {
+  id Int @id @default(autoincrement())
+  deviceId String
+  type String
+  name String?
+
+  groupId Int @default(1)
+
+  //users UserDevice[]
+  //group Group @relation(fields: [groupId], references: [id], onDelete: SetDefault)
+}
+
+model Group {
+  id Int @id @default(autoincrement())
+  name String
+
+  //devices Device[]
+  users UserGroup[]
+}
+
+model UserDevice {
+  userId   Int
+  deviceId Int
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  //device Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@id([userId, deviceId])
+}
+
+model UserGroup {
+  userId   Int
+  groupId   Int
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group   Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@id([userId, groupId])
+}
