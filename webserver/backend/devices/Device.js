@@ -101,10 +101,23 @@ class Device {
         this.functions[code].setState(state);
     }
 
-    changeName(name) {
+    async changeName(name) {
         if (name === this.name || typeof name !== 'string' || name.trim() === "") return false;
-        this.name = name;
+        if (await this.updateNameOnDb(name)) this.name = name;
         return true;
+    }
+
+    async updateNameOnDb(name) {
+        try{
+            await prisma.device.update({
+                where: { id: this.id },
+                data: { name: name }
+            });
+            return true;
+        } catch(err){
+            console.log(err);
+            return false;
+        }
     }
 
     #deviceFunctionsProvider(functions) {

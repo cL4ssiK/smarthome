@@ -232,9 +232,9 @@ function handleRemoveDevice(devices, payload) {
  * @param {Object} payload 
  * @returns 
  */
-function handleDeviceRename(device, payload) {
+async function handleDeviceRename(device, payload) {
   const oldName = device.name;
-  if (!device.changeName(payload.name)) {
+  if (!(await device.changeName(payload.name))) {
     console.log("New name is faulty, no renaming.");
     return;
   }
