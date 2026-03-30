@@ -3,9 +3,10 @@ import dotenv from "dotenv";
 import http from "http";
 import path from "path";
 import { WebSocketServer } from "ws";
-import { Devices } from "./devices/Devices.js";
 import { handleDeviceConnection, handleClientConnection } from "./services/WebSocketServices.js";
 import { fileURLToPath } from 'url';
+import { Queue } from "bullmq";
+import { AssetManager } from "./AssetManager.js";
 
 dotenv.config();
 
@@ -23,22 +24,24 @@ const HEARTBEAT_INTERVAL = 30000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const devices = new Devices();
+
+const assetmanager = new AssetManager();
 const clients = new Set(); //Works for now, when users come in need better structure.
+//const processQue = new Queue("backgroundtasks", { connection: { host: 'localhost', port: 6379 } });
 
 //============================== Websocket server ==========================
 
 wss.on("connection", (ws, req) => {
   if (req.url === "/ws/iot") {
     ws.isAlive = true;
-    handleDeviceConnection(ws, req, devices, clients);
+    handleDeviceConnection(ws, req, assetmanager, clients);
     return;
   }
   else if (req.url === "/ws/frontend") {
     clients.add(ws);
     ws.isAlive = true;
     console.log("New Client added.");
-    handleClientConnection(ws, req, clients, devices);
+    handleClientConnection(ws, req, assetmanager, clients);
     return;
   }
 
@@ -79,8 +82,8 @@ setInterval(() => {
 
 //============================ Rest API ===================================
 
-app.get('/api/devices', (req, res) => {
-  const deviceArray = devices.getAllInFrontendFormat();
+app.get('/api/devices', async (req, res) => {
+  const deviceArray = await assetmanager.getAllInFrontendFormat();
   res.json(deviceArray);
 });
 

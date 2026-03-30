@@ -1,11 +1,17 @@
+import { Queue } from "bullmq";
 
 class Function {
+
     constructor(code, name="") {
         this.name = name;
         this.code = code;
         this.active = "off"; //on/off/err
     }
 
+    /**
+     * Execute function.
+     * @param {WebSocket} websocket 
+     */
     execute(websocket) {
         const object = {
             type: "command",
@@ -17,6 +23,10 @@ class Function {
         }
     }
 
+    /**
+     * Ask the state of function on physical device.
+     * @param {WebSocket} websocket 
+     */
     askState(websocket) {
         const object = {
             type: "state",
@@ -28,6 +38,10 @@ class Function {
         }
     }
 
+    /**
+     * Set state of the function object.
+     * @param {boolean} state 
+     */
     setState(state) {
         this.active = state;
     }
@@ -77,6 +91,11 @@ class TimedFunction extends Function{
         console.log(`${type} timer set at: ${time}`);
     }
 
+    /**
+     * Cancels Timer
+     * @param {String} type 
+     * @returns 
+     */
     cancelTimer(type) {
         const eventId = this.timer[type]?.eventId;
         if (!eventId) return;
@@ -86,9 +105,41 @@ class TimedFunction extends Function{
         this.timer[type].eventTriggerTime = null; 
     }
 
+    /**
+     * Check if timer is active.
+     * @returns boolean
+     */
     isTimerActive() {
         return (this.activateEventId || this.deactivateEventId) ? true : false;
     }
+}
+
+
+//Purpose: execute function on client
+//          function can use background process or be just function
+class SpecialFunction extends Function {
+    constructor(code, func="", name="") {
+        super(code, name);
+        this.customFunctionality = func;
+        this.processId = null;
+    }
+
+    /**
+     * Add process to queue.
+     * @param {Queue} queue 
+     * @param {String} name 
+     * @param {Object} data 
+     */
+    async setProcess(queue, name, data) {
+        try {
+            this.processId = (await queue.add(name, data)).id;
+            return {id: this.processId, status: "success"};
+        } catch(err) {
+            console.log(err);
+            return { status: "error" };
+        }
+    }
+
 }
 
 export { Function, TimedFunction };

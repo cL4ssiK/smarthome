@@ -1,5 +1,5 @@
 //const WS_URL = "ws://192.168.100.44:3000/ws/iot";
-const WS_URL = "ws://192.168.100.17:5000/ws/iot";
+const WS_URL = "ws://192.168.100.18:5000/ws/iot";
 const sockets = [];
 const devices = [];
 

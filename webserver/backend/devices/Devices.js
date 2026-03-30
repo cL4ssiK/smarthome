@@ -1,11 +1,16 @@
 import { Device } from "./Device.js";
 import prisma from '../database/prisma.js';
 
-class Devices {
+export class Devices {
+
     constructor() {
         this.known_devices = new Map();
     }
 
+    /**
+     * Gets all devices from database and creates objects for them.
+     */
+    //TODO: stop using static methods, they are obsolete.
     async fetchDevicesFromDb() {
         const devices = await prisma.device.findMany();
         devices.forEach(device => {
@@ -14,13 +19,79 @@ class Devices {
         });
     }
 
+    /**
+     * Amount of devices in server memory.
+     * @returns Integer
+     */
     size() {
         return this.known_devices.size;
     }
 
+    /**
+     * Add new device to server memory.
+     * @param {Device} device 
+     * @returns 
+     */
     add(device) {
         if (!(device instanceof Device)) return;
         this.known_devices.set(device.device_id, device);
+    }
+
+    /**
+     * 
+     * @param {Object} data {deviceId, state, code}
+     */
+    changeFunctionState(data) {
+        const device = this.known_devices.get(data.deviceId);
+        device.changeFunctionState(data.state, data.code);
+    }
+
+    /**
+     * Send command to specific device.
+     * @param {String} deviceId 
+     * @param {Int} funcCode 
+     */
+    sendCommand(deviceId, funcCode) {
+        const device = this.known_devices.get(deviceId);
+        device.send_command(funcCode);
+    }
+
+    /**
+     * Set timed function on specific device.
+     * @param {Object} data 
+     */
+    sendTimedCommand(data) {
+        const device = this.known_devices.get(data?.deviceId);
+        device.set_timer(data?.code, data?.time, data?.timeS, data?.type);
+    }
+
+    /**
+     * Remove set timer from function of specific device.
+     * @param {String} deviceId 
+     * @param {Int} funcCode 
+     * @param {String} type 
+     */
+    removeTimedCommand(deviceId, funcCode, type) {
+        const device = this.known_devices.get(deviceId);
+        device.remove_timer(funcCode, type);
+    }
+    
+    // TODO: There is bug in rename, that returns old name if device is renamed as first thing after connecting.
+    /**
+     * Renames device
+     * @param {String} deviceId 
+     * @param {String} name 
+     * @returns 
+     */
+    async renameDevice(deviceId, name) {
+        const device = await this.findById(deviceId);
+        console.log(device);
+        const oldName = device?.name;
+        if (!(await device.changeName(name))) {
+            console.log("New name is faulty, no renaming.");
+            return;
+        }
+        console.log("Device " + oldName + " renamed to " + name + ".");
     }
 
     /**
@@ -66,9 +137,14 @@ class Devices {
     async findFromDb(id) {
         const device = await prisma.device.findFirst({ where: { deviceId: id } });
         if (!device) return null;
-        return Device.deviceFromDatabase(device);
+        return Device.newDevice(device);
     }
 
+    /**
+     * Find device based on the websocket connection object.
+     * @param {WebSocket} ws 
+     * @returns Device or null
+     */
     findByConnection(ws) {
         //if (!(ws instanceof WebSocket)) return null;
 
@@ -78,6 +154,10 @@ class Devices {
         return null;
     }
 
+    /**
+     * Devices in format suitable for frontend.
+     * @returns array of device objects
+     */
     async getAllInFrontendFormat() {
         const deviceArray = [];
         for (const [id, device] of this.known_devices) {
@@ -109,5 +189,3 @@ class Devices {
         return deviceArray;
     }
 }
-
-export { Devices };

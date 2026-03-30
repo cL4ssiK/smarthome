@@ -1,14 +1,13 @@
-import { Device } from "../devices/Device.js";
-import { Devices } from "../devices/Devices.js";
+import { AssetManager } from "../AssetManager.js";
 
 /**
  * Handles websocket communication between server and IoT device.
  * @param {WebSocket} ws 
  * @param {Object} req 
- * @param {Devices} devices 
+ * @param {AssetManager} assetmanager 
  * @param {Set} clients 
  */
-function handleDeviceConnection(ws, req, devices, clients) {
+function handleDeviceConnection(ws, req, assetmanager, clients) {
     /**
      * Message structure:
      * {
@@ -29,42 +28,32 @@ function handleDeviceConnection(ws, req, devices, clients) {
      */
     ws.on("message", async msg => {
         const data = JSON.parse(msg);
+        //TODO: Check validity of data.
 
         if (data.type === "register") {
-          let device = await devices.findById(data.device_id);
-          console.log(device);
-          if (device === null) {
-            device = Device.newDevice(data.device_id, data?.payload?.functions, data?.payload?.devicetype);
-            device.save();
+
+          if (!(await assetmanager.activateDevice(data, ws))) {
+
+            const success = await assetmanager.registerNewDevice(data);
+            console.log(success);
+            if (success) {
+              await assetmanager.activateDevice(data, ws);
+              console.log("Device registered:", data.device_id);
+            }
           }
-          else {
-            device.addFunctions(data?.payload?.functions);
-          }
-          device.connect(ws);
-          data?.payload?.functions.forEach(func => device.changeFunctionState(func.initialstate, func.code));
-          
-          devices.add(device);
-          console.log("ESP registered:", data.device_id);
+          else console.log("Device connected:", data.device_id);
 
           sendDeviceUpdate(clients);
         }
         else if (data.type === "functionstate"){
-
-          const device = await devices.findById(data.device_id);
-
-          device.changeFunctionState(data.payload?.state, data.func_code);
-          
+          assetmanager.changeFunctionState(data);
           sendDeviceUpdate(clients);
         }
     });
 
   ws.on("close", () => {
-    const device = devices.findByConnection(ws);
-    if(device) {
-      devices.disconnect(device);
-      sendDeviceUpdate(clients);
-    }
-
+    assetmanager.disconnectDevice(ws);
+    sendDeviceUpdate(clients);
   });
 
   ws.on("pong", () => {
@@ -74,25 +63,10 @@ function handleDeviceConnection(ws, req, devices, clients) {
   ws.on("error", () => {
     console.log("Error, Ws terminated.");
     ws.terminate();
-    const device = devices.findByConnection(ws);
-    
-    devices.disconnect(device);
-    console.log(device.device_id + " disconnected!");
+    assetmanager.disconnectDevice(ws);
     sendDeviceUpdate(clients);
   });
 }
-
-
-/**
- * "Dictionary" of available functions matching command types.
- */
-const functionalities = {
-        command: handleCommand,
-        timedcommand: handleTimedCommand,
-        removetimer: handleRemoveTimer,
-        remove: handleRemoveDevice,
-        rename: handleDeviceRename,
-      };
 
 
 //TODO: fix the issue that deviceupdate is only sent if state changes on timed call.
@@ -100,38 +74,47 @@ const functionalities = {
  * Handles websocket communication between server and client.
  * @param {WebSocket} ws 
  * @param {Object} req 
+ * @param {AssetManager} assetmanager 
  * @param {Set} clients 
- * @param {Devices} devices 
  */
-function handleClientConnection(ws, req, clients, devices) {
-    ws.on("message", async msg => {
-      const data = JSON.parse(msg);
+function handleClientConnection(ws, req, assetmanager, clients) {
+
+  // Dictionary of available functions matching command types.
+  const functionalities = {
+    command: (data) => assetmanager.sendCommand(data),
+    timedcommand: (data) => assetmanager.sendTimedCommand(data),
+    removetimer: (data) => assetmanager.removeTimedCommand(data),
+    remove: (data) => assetmanager.removeDevice(data),
+    rename: (data) => assetmanager.renameDevice(data),
+  };
+
+  ws.on("message", async msg => {
+    const data = JSON.parse(msg);
+    
+    const errMsg = verifyData(data);
+    if (errMsg) {
+      ws.send(JSON.stringify(errMsg));
+      return;
+    }
+
+    const func = functionalities[data.type];
+    const payload = data.payload;
+
+    func(payload);
       
-      const errMsg = verifyData(data);
-      if (errMsg) {
-        ws.send(JSON.stringify(errMsg));
-        return;
-      }
+    sendDeviceUpdate(clients);
+  });
 
-      const func = functionalities[data.type];
-      const payload = data.payload;
-      const device = await devices.findById(data.payload.id);
-      //Hacky fix for device removal. Refactor later?
-      func == handleRemoveDevice ? func(devices, payload) : func(device, payload);
-      
-      sendDeviceUpdate(clients);
-    });
+  ws.on("close", () => {
+    clients.delete(ws);
+    console.log("Client disconnected");
+  });
 
-    ws.on("close", () => {
-        clients.delete(ws);
-        console.log("Client disconnected");
-    });
+  ws.on("pong", () => {
+    ws.isAlive = true;
+  });
 
-    ws.on("pong", () => {
-        ws.isAlive = true;
-    });
-
-    ws.on("error", () => {
+  ws.on("error", () => {
     console.log("Error, Ws terminated.");
     ws.terminate();
     clients.delete(ws);
@@ -172,71 +155,6 @@ function verifyData(data) {
       };
   }
   return errorObj;
-}
-
-
-/**
- * Handles forwarding basic command to device.
- * @param {Device} device 
- * @param {Object} payload 
- */
-function handleCommand(device, payload) {
-  const command_code = payload?.code;
-  device.send_command(command_code);
-}
-
-
-/**
- * Handles setting up timer for command.
- * @param {Device} device 
- * @param {Object} payload 
- */
-function handleTimedCommand(device, payload) {
-  const command_code = payload?.code;
-  const time = payload?.time;
-  const timeS = payload?.timeS;
-  const type = payload?.type;
-
-  //TODO: backend validation
-  device.set_timer(command_code, time, timeS, type);
-}
-
-
-/**
- * Handles cancelling set timer.
- * @param {Device} device 
- * @param {Object} payload 
- */
-function handleRemoveTimer(device, payload) {
-  device.remove_timer(payload.code, payload.type);
-}
-
-
-/**
- * Handles removal of device from server memory and/or database.
- * @param {Devices} devices 
- * @param {Object} payload 
- */
-function handleRemoveDevice(devices, payload) {
-  const device_id = payload?.id;
-  devices.remove(device_id);
-  console.log("Device " + device_id + " removed");
-}
-
-
-/**
- * Renames device
- * @param {Device} device 
- * @param {Object} payload 
- * @returns 
- */
-async function handleDeviceRename(device, payload) {
-  const oldName = device.name;
-  if (!(await device.changeName(payload.name))) {
-    console.log("New name is faulty, no renaming.");
-    return;
-  }
-  console.log("Device " + oldName + " renamed to " + payload.name);
 }
 
 export { handleDeviceConnection, handleClientConnection };
