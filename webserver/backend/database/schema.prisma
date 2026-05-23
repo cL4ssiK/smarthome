@@ -19,7 +19,8 @@ model User {
   pswd  String
   role String
 
-  devices UserDevice[]
+  refreshtoken String?
+
   groups UserGroup[]
 }
 
@@ -31,31 +32,22 @@ model Device {
 
   groupId Int @default(1)
 
-  //users UserDevice[]
-  //group Group @relation(fields: [groupId], references: [id], onDelete: SetDefault)
+  group Group @relation(fields: [groupId], references: [id], onDelete: SetDefault)
 }
 
 model Group {
   id Int @id @default(autoincrement())
   name String
 
-  //devices Device[]
+  devices Device[]
   users UserGroup[]
-}
-
-model UserDevice {
-  userId   Int
-  deviceId Int
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  //device Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
-
-  @@id([userId, deviceId])
 }
 
 model UserGroup {
   userId   Int
   groupId   Int
+
+  role String @default("user")
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   group   Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)

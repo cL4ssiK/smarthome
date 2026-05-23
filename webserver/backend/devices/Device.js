@@ -47,6 +47,7 @@ export class Device {
                     type: this.type 
                 }
             });
+
             this.id = newRecord.id; // Sync the ID back to the object
             return newRecord;
         }

@@ -10,11 +10,16 @@ function Header({ setView }) {
                 onClick={() => {
                     setView(0);
                     setActive(0);
-                }}>DEVICES</li>
+                }}>MENU</li>
             <li className={active === 1 ? styles.active : ""} 
                 onClick={() => {
                     setView(1);
                     setActive(1);
+                }}>DEVICES</li>
+            <li className={active === 2 ? styles.active : ""} 
+                onClick={() => {
+                    setView(2);
+                    setActive(2);
                 }}>SETTINGS</li>
         </ul>
     );

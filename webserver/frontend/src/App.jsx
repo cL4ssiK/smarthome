@@ -6,22 +6,26 @@ import { ThemeContext } from './context/ThemeContext';
 import { DeviceList } from './modules/DeviceList';
 import { Header } from './modules/Header';
 import { Settings } from './modules/Settings';
+import { MainMenu } from './modules/MainMenu';
+import { UserProvider } from './context/UserContext';
 
 function App() {
   const themeContext = useContext(ThemeContext);
   const [view, setView] = useState(0);
-  const views = [<DeviceList/>, <Settings/>];
+  const views = [<MainMenu/>, <DeviceList/>, <Settings/>];
 
   return (
     <WebSocketProvider>
-      <DeviceProvider>
-        <div className="App">
-          <Header setView={setView}/>
-          {views[view]}
-          <div className={themeContext.retro ? "scanlines" : ""}></div>
-          <div className={themeContext.scan ? "scanline" : ""}></div>
-        </div>
-      </DeviceProvider>
+      <UserProvider>
+        <DeviceProvider>
+          <div className="App">
+            <Header setView={setView}/>
+            {views[view]}
+            <div className={themeContext.retro ? "scanlines" : ""}></div>
+            <div className={themeContext.scan ? "scanline" : ""}></div>
+          </div>
+        </DeviceProvider>
+      </UserProvider>
     </WebSocketProvider>
   );
 }

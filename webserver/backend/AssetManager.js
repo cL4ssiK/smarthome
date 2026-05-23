@@ -22,7 +22,6 @@ export class AssetManager {
      */
     async registerNewDevice(data) {
         try {
-            console.log(data);
             const deviceId = data?.device_id;
             const name = data?.name ? data.name : "";
             const type = data?.payload?.devicetype ? data.payload.devicetype : "";
@@ -32,7 +31,7 @@ export class AssetManager {
                 name: name,
                 type: type,
             });
-
+            console.log("moi");
             await device.save();
         } catch (err) {
             console.log(err);

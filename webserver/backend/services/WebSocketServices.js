@@ -35,7 +35,7 @@ function handleDeviceConnection(ws, req, assetmanager, clients) {
           if (!(await assetmanager.activateDevice(data, ws))) {
 
             const success = await assetmanager.registerNewDevice(data);
-            console.log(success);
+
             if (success) {
               await assetmanager.activateDevice(data, ws);
               console.log("Device registered:", data.device_id);

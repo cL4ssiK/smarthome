@@ -19,12 +19,15 @@
     "@prisma/adapter-pg": "^7.5.0",
     "@prisma/client": "^7.5.0",
     "@prisma/config": "^7.5.0",
+    "argon2": "^0.44.0",
     "body-parser": "^2.2.2",
     "bullmq": "^5.70.4",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "http": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.3",
     "pg": "^8.20.0",
     "ws": "^8.19.0"
   },
@@ -33,5 +36,8 @@
     "nodemon": "^3.1.11",
     "prisma": "^7.5.0",
     "supertest": "^7.2.2"
+  },
+  "prisma": {
+    "seed": "node database/seed.js"
   }
 }
