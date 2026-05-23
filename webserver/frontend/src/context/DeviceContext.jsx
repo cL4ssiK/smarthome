@@ -1,5 +1,7 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import { WebSocketContext } from './WebSocketContext';
+import { useApi } from '../utils/useApi';
+import { UserContext } from './UserContext';
 
 export const DeviceContext = createContext(null);
 
@@ -48,6 +50,7 @@ export const validateDevices = (data) => {
 export function DeviceProvider({ children }) {
 
     const { lastEvent } = useContext(WebSocketContext);
+    const { user } = useContext(UserContext);
 
   /**
    * Devices are of type:
@@ -63,9 +66,12 @@ export function DeviceProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const api = useApi();
+
     const fetchDevices = async () => {
+        if (!user) return setLoading(false);
         try {
-          const res = await fetch('/api/devices'); // replace with your endpoint
+          const res = await api('/api/devices'); // replace with your endpoint
           if (!res.ok) throw new Error('Failed to fetch devices');
           const data = await res.json();
           console.log(data);
@@ -84,7 +90,11 @@ export function DeviceProvider({ children }) {
 
     useEffect(() => {
         fetchDevices();
-    }, [lastEvent]);
+    }, [lastEvent, user]);
+
+    useEffect(() => {
+        if (!user) setDevices([]);
+    }, [user]);
 
     const addDevice = (device) => {
         setDevices(prevDevices => [...prevDevices, device]);

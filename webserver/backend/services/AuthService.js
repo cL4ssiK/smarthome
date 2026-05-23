@@ -12,7 +12,7 @@ export function authenticateToken(req, res, next) {
     if (!token) return res.sendStatus(401); // Unauthorized
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) return res.sendStatus(401).json({message: "Token expired"});
+        if (err) return res.status(401).json({message: "Token expired"});
 
         // Add the decoded user info to the request object
         req.user = user;

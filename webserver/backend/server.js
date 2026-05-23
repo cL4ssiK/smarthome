@@ -86,13 +86,13 @@ setInterval(() => {
 //============================ Rest API ===================================
 
 
-app.get('/api/devices', async (req, res) => {
+app.get('/api/devices', authenticateToken, async (req, res) => {
   const deviceArray = await assetmanager.getAllInFrontendFormat();
   res.json(deviceArray);
 });
 
 
-app.get('/api/refresh', async (req, res) => {
+app.post('/api/refresh', async (req, res) => {
   const rftoken = req.cookies?.refreshtoken;
   
   if (!rftoken) return res.sendStatus(403);
