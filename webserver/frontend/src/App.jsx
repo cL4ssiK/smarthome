@@ -8,11 +8,12 @@ import { Header } from './modules/Header';
 import { Settings } from './modules/Settings';
 import { MainMenu } from './modules/MainMenu';
 import { UserProvider } from './context/UserContext';
+import { Groups } from './modules/Groups';
 
 function App() {
   const themeContext = useContext(ThemeContext);
   const [view, setView] = useState(0);
-  const views = [<MainMenu/>, <DeviceList/>, <Settings/>];
+  const views = [<MainMenu/>, <DeviceList/>, <Groups/>, <Settings/>];
 
   return (
     <WebSocketProvider>

@@ -17,9 +17,14 @@ function Header({ setView }) {
                     setActive(1);
                 }}>DEVICES</li>
             <li className={active === 2 ? styles.active : ""} 
+            onClick={() => {
+                setView(2);
+                setActive(2);
+            }}>GROUPS</li>
+            <li className={active === 3 ? styles.active : ""} 
                 onClick={() => {
-                    setView(2);
-                    setActive(2);
+                    setView(3);
+                    setActive(3);
                 }}>SETTINGS</li>
         </ul>
     );
