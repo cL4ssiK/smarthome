@@ -102,7 +102,10 @@ export function DeviceProvider({ children }) {
     }, [lastEvent, user]);
 
     useEffect(() => {
-        if (!user) setDevices([]);
+        if (!user) {
+            setDevices({});
+            setGroups([]);
+        }
     }, [user]);
 
     //TODO: Refactor these.

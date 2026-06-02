@@ -21,9 +21,11 @@ function Devices() {
     };
 
     const setActiveGroupAndDevices = function(index) {
-        setSelectedDevices(devices[groups[index].groupId]);
+        const actives = devices[groups[index].groupId];
+        const d = actives ? actives : [];
+        setSelectedDevices(d);
         setActiveGroup(groups[index].groupId);
-        console.log("uudet laitteet", selectedDevices);
+        console.log("uudet laitteet", d);
     };
 
     return (

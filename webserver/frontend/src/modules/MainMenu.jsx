@@ -8,6 +8,7 @@ function MainMenu() {
     const { user } = useContext(UserContext);
 
     const defaultView = (<div>
+                            <h1>Welcome to smarthome hub!</h1>
                             {user && <p>Hello {user.username}</p>}
                         </div>);
 

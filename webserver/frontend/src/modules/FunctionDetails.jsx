@@ -43,7 +43,6 @@ function FunctionDetails({ func, device, handleReturnBtonClick }) {
 
         const timerInterval = ((timerTimeS - currentTimeS) > 0) ? timerTimeS - currentTimeS : timerTimeS - currentTimeS + 24*60*60;
 
-        console.log("hello???", timerInterval);
         console.log(`${type} timer set at: ${timerHour}:${timerMinute}`);
 
         wsContext.sendTimerEvent(device.id, func.code, type, `${timerHour}:${timerMinute}`, timerInterval);
