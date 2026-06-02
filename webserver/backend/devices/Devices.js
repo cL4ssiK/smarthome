@@ -8,18 +8,6 @@ export class Devices {
     }
 
     /**
-     * Gets all devices from database and creates objects for them.
-     */
-    //TODO: stop using static methods, they are obsolete.
-    async fetchDevicesFromDb() {
-        const devices = await prisma.device.findMany();
-        devices.forEach(device => {
-            const d = Device.deviceFromDatabase(device);
-            this.add(d);
-        });
-    }
-
-    /**
      * Amount of devices in server memory.
      * @returns Integer
      */
@@ -155,6 +143,17 @@ export class Devices {
     }
 
     /**
+     * Find all devices belonging to certain group from db.
+     * @param {Number} group 
+     * @returns 
+     */
+    async getDevicesInGroup(groupId) {
+        return await prisma.device.findMany({
+            where: { groupId: groupId }
+        });
+    }
+
+    /**
      * Devices in format suitable for frontend.
      * @returns array of device objects
      */
@@ -179,6 +178,47 @@ export class Devices {
         inactiveDevices?.forEach(elem => {
             if(!deviceArray.find(e => e.id === elem.deviceId)) deviceArray.push({
                 id: elem.deviceId,
+                groupId: elem.groupId,
+                name: elem.name,
+                type: elem.type,
+                functions: [],
+                active: false,
+            })
+        });
+
+        return deviceArray;
+    }
+
+    /**
+     * Devices in format suitable for frontend.
+     * @returns array of device objects
+     */
+    async getGroupDevicesInFrontendFormat(group) {
+        const groupId = group.groupId;
+        const deviceArray = [];
+        for (const [id, device] of this.known_devices) {
+            if (device.groupId !== groupId) continue;
+            //console.log(device);
+            const funcs = [];
+            for (const key in device.functions) {
+                funcs.push(device.functions[key]);
+            }
+            deviceArray.push({
+                id: id,
+                groupId: device.groupId,
+                name: device.name,
+                type: device.type,
+                functions: funcs,
+                active: device.active,
+            });
+        }
+        
+        const inactiveDevices = await this.getDevicesInGroup(groupId);
+
+        inactiveDevices?.forEach(elem => {
+            if(!deviceArray.find(e => e.id === elem.deviceId)) deviceArray.push({
+                id: elem.deviceId,
+                groupId: elem.groupId,
                 name: elem.name,
                 type: elem.type,
                 functions: [],

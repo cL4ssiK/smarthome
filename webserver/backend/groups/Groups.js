@@ -11,7 +11,7 @@ export class Groups {
         });
         await prisma.userGroup.create({
             data: { 
-                userId: user.id,
+                userId: user.userId,
                 groupId: group.id,
                 role: "owner",
              }
@@ -22,15 +22,6 @@ export class Groups {
     async getUsersGroups(user) {
         return await prisma.userGroup.findMany({
             where: { userId: user.id },
-            include: {
-                group: true // This fetches the full Group object, not just the ID
-            }
-        });
-    }
-    
-    async getDevicesInGroup(group) {
-        return await prisma.device.findMany({
-            where: { groupId: group.id }
         });
     }
     

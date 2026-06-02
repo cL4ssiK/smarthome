@@ -9,6 +9,7 @@ import { Queue } from "bullmq";
 import { AssetManager } from "./AssetManager.js";
 import { authenticateToken, logIn, register, logOut, renewToken } from "./services/AuthService.js";
 import cookieParser from "cookie-parser";
+import { Groups } from "./groups/Groups.js";
 
 dotenv.config();
 
@@ -91,6 +92,20 @@ app.get('/api/devices', authenticateToken, async (req, res) => {
   res.json(deviceArray);
 });
 
+app.get('/api/groups', authenticateToken, async (req, res) => {
+  const items = await assetmanager.getUsersGroupsAndDevices(req);
+  res.json(items);
+});
+
+app.post('/api/newgroup', authenticateToken, async (req, res) => {
+  const data = {
+    user: req?.user,
+    group: req?.body?.group
+  };
+  const group = await assetmanager.createNewGroup(data);
+  if (!group) return res.sendStatus(500);
+  return res.status(200).json(group);
+});
 
 app.post('/api/refresh', async (req, res) => {
   const rftoken = req.cookies?.refreshtoken;

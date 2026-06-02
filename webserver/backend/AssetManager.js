@@ -143,11 +143,33 @@ export class AssetManager {
         await this.devices.renameDevice(data?.id, data?.name);
     }
 
+    async createNewGroup(data) {
+        const user = data.user;
+        const name = data.group.name;
+        return await this.groups.newGroup(name, user);
+    }
+
     /**
      * Function for requesting all devices formatted for frontend.
      * @returns array of Device objects in slightly differend format.
      */
     async getAllInFrontendFormat() {
         return await this.devices.getAllInFrontendFormat();
+    }
+
+    async getUsersGroupsAndDevices(data) {
+        const user = data?.user;
+        const groups = await this.groups.getUsersGroups(user);
+        const devices = {};
+
+        for (const group of groups) {
+            const d = await this.devices.getGroupDevicesInFrontendFormat(group);
+            if (d.length > 0) devices[group.groupId] = d;
+        }
+
+        return {
+            groups: groups,
+            devices: devices
+        };
     }
 }

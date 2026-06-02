@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import { DeviceContext } from "../context/DeviceContext";
+import { useApi } from "../utils/useApi";
 
 
 function NewGroup({ setCreateNewGroup }) {
@@ -8,9 +9,12 @@ function NewGroup({ setCreateNewGroup }) {
 
     const [groupName, setGroupName] = useState("");
 
-    const createNewGroup = function() {
+    const api = useApi();
+
+    const createNewGroup = async function() {
         if (!groupName) return;
-        console.log("new group: " + groupName);       
+        const group = await (await api('/api/newgroup', { method: "POST", body: JSON.stringify({group:{name: groupName}}) })).json();
+        console.log("new group: ", group);
     }
     
     return (

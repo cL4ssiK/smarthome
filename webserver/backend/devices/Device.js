@@ -8,6 +8,7 @@ export class Device {
         this.name = data.name;
         this.device_id = data.deviceId;
         this.type = data.type;
+        this.groupId = data.groupId;
         this.connection = null;
         this.active = false;
         this.functions = null;
@@ -18,6 +19,7 @@ export class Device {
         return new Device({
             id: (data?.id ? data.id : null),
             deviceId: data.deviceId,
+            groupId: (data?.groupId ? data.groupId : 1),
             name: data.name,
             type: data.type,
         });
@@ -34,6 +36,7 @@ export class Device {
                 where: { id: this.id },
                 data: { 
                     deviceId: this.device_id,
+                    groupId: this.groupId,
                     name: this.name,
                     type: this.type 
                 }
@@ -43,6 +46,7 @@ export class Device {
             const newRecord = await prisma.device.create({
                 data: { 
                     deviceId: this.device_id,
+                    groupId: this.groupId,
                     name: this.name,
                     type: this.type 
                 }

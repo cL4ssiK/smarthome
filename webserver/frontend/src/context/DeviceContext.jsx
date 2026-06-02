@@ -63,6 +63,7 @@ export function DeviceProvider({ children }) {
    * }
    */
     const [devices, setDevices] = useState([]);
+    const [groups, setGroups] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -71,7 +72,7 @@ export function DeviceProvider({ children }) {
     const fetchDevices = async () => {
         if (!user) return setLoading(false);
         try {
-          const res = await api('/api/devices'); // replace with your endpoint
+          const res = await api('/api/devices');
           if (!res.ok) throw new Error('Failed to fetch devices');
           const data = await res.json();
           console.log(data);
@@ -88,8 +89,39 @@ export function DeviceProvider({ children }) {
         }
     };
 
+    const fetchGroupsAndDevices = async () => {
+        if (!user) return setLoading(false);
+        try {
+            const res = await api('/api/groups');
+            if (!res.ok) throw new Error('Failed to fetch groups');
+            const data = await res.json();
+            console.log(data.groups);
+            setGroups(data.groups);
+
+            console.log(data.devices);
+            const validatedDevices = {};
+            for (const [groupId, list] of Object.values(data.devices)) {
+                const validatedList = validateDevices(list).sort((a, b) => {
+                    if (a.active && !b.active) return -1;
+                    if (!a.active && b.active) return 1;
+                    return 0;
+                });
+                validatedDevices[Number(groupId)] = validatedList;
+            }
+            //setDevices(validatedDevices);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         fetchDevices();
+    }, [lastEvent, user]);
+    
+    useEffect(() => {
+        fetchGroupsAndDevices();
     }, [lastEvent, user]);
 
     useEffect(() => {
