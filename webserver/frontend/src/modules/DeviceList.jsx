@@ -6,8 +6,8 @@ import { InputTextButton } from "./InputTextButton";
 import styles from "./DeviceList.module.css";
 import { ReactComponent as CoffeemakerIMG } from "../images/coffeemakerFallout4.svg";
 
-function DeviceList() {
-    const devicesContext = useContext(DeviceContext);
+function DeviceList({group}) {
+    const {devices, loading} = useContext(DeviceContext);
     const wsContext = useContext(WebSocketContext);
 
     const [deviceFunctions, setDeviceFunctions] = useState([]);
@@ -20,10 +20,10 @@ function DeviceList() {
     };
 
     useEffect(() => {
-        if (!devicesContext.devices) return;
+        if (!devices[group]) return;
 
         setDeviceFunctions(prevDeviceFunctions => 
-            devicesContext.devices?.map(device => {
+            devices[group]?.map(device => {
                 const prevToggleState = prevDeviceFunctions?.find(f => f.id == device.id);
                 return { 
                     id: device.id, 
@@ -31,7 +31,7 @@ function DeviceList() {
                 };
             })
         );
-    }, [devicesContext.devices]);
+    }, [devices[group]]);
 
     function changeDevFuncVisibility(id){
         setDeviceFunctions(prevDevices => prevDevices.map(device =>
@@ -47,16 +47,13 @@ function DeviceList() {
         wsContext.removeDevice(id);
     }
 
-    if (devicesContext.loading) {
+    if (loading) {
         return <p>Loading...</p>;
     }
 
     return (
         <div>
-            <header>
-                <h1>YOUR DEVICES</h1>
-            </header>
-            {devicesContext.devices?.map((device, i) => (
+            {devices[group]?.map((device, i) => (
                 <div key={device.id}
                     className={styles.deviceDiv}>
                     <div id={device.id}

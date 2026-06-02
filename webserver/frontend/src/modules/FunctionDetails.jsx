@@ -55,7 +55,7 @@ function FunctionDetails({ func, device, handleReturnBtonClick }) {
 
     //TODO: maybe only use the context, might be better way idk.
     useEffect(() => {
-        const fs = deviceContext.getDeviceFunctionState(device.id, func.code);
+        const fs = deviceContext.getDeviceFunctionState(device.groupId, device.id, func.code);
         setfuncState(fs);
     }, [deviceContext]);
 

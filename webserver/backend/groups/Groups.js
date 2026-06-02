@@ -20,9 +20,20 @@ export class Groups {
     }
 
     async getUsersGroups(user) {
-        return await prisma.userGroup.findMany({
+        const data = await prisma.userGroup.findMany({
             where: { userId: user.id },
+            include: {
+                group: {
+                    select: {
+                        name: true
+            }   }   }
         });
+        return data.map(elem => ({
+            userId: elem.userId,
+            groupId: elem.groupId,
+            role: elem.role,
+            name: elem.group.name,
+        }));
     }
     
     async addDeviceToGroup(device, group) {

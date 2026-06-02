@@ -3,7 +3,7 @@ import './App.css';
 import { DeviceProvider } from './context/DeviceContext';
 import { WebSocketProvider } from './context/WebSocketContext';
 import { ThemeContext } from './context/ThemeContext';
-import { DeviceList } from './modules/DeviceList';
+import { Devices } from './modules/Devices';
 import { Header } from './modules/Header';
 import { Settings } from './modules/Settings';
 import { MainMenu } from './modules/MainMenu';
@@ -13,7 +13,7 @@ import { Groups } from './modules/Groups';
 function App() {
   const themeContext = useContext(ThemeContext);
   const [view, setView] = useState(0);
-  const views = [<MainMenu/>, <DeviceList/>, <Groups/>, <Settings/>];
+  const views = [<MainMenu/>, <Devices/>, <Groups/>, <Settings/>];
 
   return (
     <WebSocketProvider>

@@ -62,32 +62,12 @@ export function DeviceProvider({ children }) {
    *    
    * }
    */
-    const [devices, setDevices] = useState([]);
+    const [devices, setDevices] = useState({});
     const [groups, setGroups] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     const api = useApi();
-
-    const fetchDevices = async () => {
-        if (!user) return setLoading(false);
-        try {
-          const res = await api('/api/devices');
-          if (!res.ok) throw new Error('Failed to fetch devices');
-          const data = await res.json();
-          console.log(data);
-          const validatedData = validateDevices(data).sort((a, b) => {
-            if (a.active && !b.active) return -1;
-            if (!a.active && b.active) return 1;
-            return 0;
-          });
-          setDevices(validatedData);
-        } catch (err) {
-          setError(err.message);
-        } finally {
-          setLoading(false);
-        }
-    };
 
     const fetchGroupsAndDevices = async () => {
         if (!user) return setLoading(false);
@@ -100,7 +80,8 @@ export function DeviceProvider({ children }) {
 
             console.log(data.devices);
             const validatedDevices = {};
-            for (const [groupId, list] of Object.values(data.devices)) {
+            for (const [groupId, list] of Object.entries(data.devices)) {
+                console.log(list);
                 const validatedList = validateDevices(list).sort((a, b) => {
                     if (a.active && !b.active) return -1;
                     if (!a.active && b.active) return 1;
@@ -108,17 +89,13 @@ export function DeviceProvider({ children }) {
                 });
                 validatedDevices[Number(groupId)] = validatedList;
             }
-            //setDevices(validatedDevices);
+            setDevices(validatedDevices);
         } catch (err) {
             setError(err.message);
         } finally {
             setLoading(false);
         }
     };
-
-    useEffect(() => {
-        fetchDevices();
-    }, [lastEvent, user]);
     
     useEffect(() => {
         fetchGroupsAndDevices();
@@ -128,47 +105,51 @@ export function DeviceProvider({ children }) {
         if (!user) setDevices([]);
     }, [user]);
 
-    const addDevice = (device) => {
-        setDevices(prevDevices => [...prevDevices, device]);
+    //TODO: Refactor these.
+    const addDevice = (groupId, device) => {
+        setDevices(prevDevices => ({...prevDevices, [groupId]: [...prevDevices[groupId], device]}));
     };
 
-    const removeDevice = (id) => {
-        setDevices(prevDevices => prevDevices.filter(device => device.id !== id));
+    const removeDevice = (groupId, id) => {
+        setDevices(prevDevices => prevDevices[groupId].filter(device => device.id !== id));
     };
 
-    const toggleDeviceState = (id) => {
-        setDevices(prevDevices => 
-            prevDevices.map(device => 
+    const toggleDeviceState = (groupId, id) => {
+        setDevices(prevDevices => ({
+            ...prevDevices,
+            [groupId]: prevDevices[groupId].map(device => 
                 device.id === id ? { ...device, active: !device.active} : device
             )
-        );
+        }));
     };
 
-    const toggleDeviceFunctionState = (id, code, state) => {
-        setDevices(prevDevices => 
-            prevDevices.map(device =>
+    const toggleDeviceFunctionState = (groupId, id, code, state) => {
+        setDevices(prevDevices => ({
+            ...prevDevices,
+            [groupId]: prevDevices[groupId].map(device =>
                 device.id === id ? { ...device, functions: device.functions.map(func => 
                     func.code === code ? {...func, active: state} : func
                 )} : device
-            )
+            )})
         );
     };
 
-    const changeDeviceName = (id, newName) => {
-        setDevices(prevDevices => 
-            prevDevices.map(device => 
+    const changeDeviceName = (groupId, id, newName) => {
+        setDevices(prevDevices => ({ 
+            ...prevDevices, 
+            [groupId]: prevDevices[groupId].map(device => 
                 device.id === id ? { ...device, name: newName} : device
-            )
+            )})
         );
     }
 
-    const getDeviceFunctionState = (id, code) => {
-        return devices.find(device => device.id === id)?.
+    const getDeviceFunctionState = (groupId, id, code) => {
+        return devices[groupId].find(device => device.id === id)?.
             functions?.find(func => func.code === code)?.active;
     };
 
   return (
-    <DeviceContext.Provider value={{ devices, loading, error, removeDevice, changeDeviceName, getDeviceFunctionState }}>
+    <DeviceContext.Provider value={{ devices, groups, loading, error, removeDevice, changeDeviceName, getDeviceFunctionState }}>
       {children}
     </DeviceContext.Provider>
   );
