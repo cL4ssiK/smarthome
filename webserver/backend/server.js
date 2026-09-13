@@ -107,6 +107,38 @@ app.post('/api/newgroup', authenticateToken, async (req, res) => {
   return res.status(200).json(group);
 });
 
+app.post('/api/group/newUser', authenticateToken, async (req, res) => {
+  const data = {
+    user: req?.user,
+    groupId: req?.body?.groupId,
+    addUser: req?.body?.user,
+  };
+  const errMsg = await assetmanager.addNewUserToGroup(data);
+
+  if (errMsg) {
+    res.status(500).json(errMsg);
+    console.log(errMsg);
+  }
+  else
+    return res.sendStatus(200);
+});
+
+app.post('/api/group/removeUser', authenticateToken, async (req, res) => {
+  const data = {
+    user: req?.user,
+    groupId: req?.body?.groupId,
+    rmUser: req?.body?.user,
+  };
+  const errMsg = await assetmanager.removeUserFromGroup(data);
+
+  if (errMsg) {
+    res.status(500).json(errMsg);
+    console.log(errMsg);
+  }
+  else 
+    return res.sendStatus(200);
+});
+
 app.post('/api/refresh', async (req, res) => {
   const rftoken = req.cookies?.refreshtoken;
   

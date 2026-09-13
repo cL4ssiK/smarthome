@@ -17,4 +17,16 @@ function TextAndButton({ as: Component='h3', symbol, text, value="", handleBtonC
     );
 }
 
-export { TextAndButton };
+function Text({ as: Component='h3', text }) {
+
+    return (
+        <div className={styles.firstRow}>
+            <Component 
+                className={styles.textElement}>
+                {text}
+            </Component>
+        </div>           
+    );
+}
+
+export { TextAndButton, Text };

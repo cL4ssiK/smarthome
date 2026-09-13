@@ -10,6 +10,7 @@ function DeviceList({group}) {
     const {devices, loading} = useContext(DeviceContext);
     const wsContext = useContext(WebSocketContext);
 
+    // Actually tells if device card shows functions
     const [deviceFunctions, setDeviceFunctions] = useState([]);
 
     const icons = {

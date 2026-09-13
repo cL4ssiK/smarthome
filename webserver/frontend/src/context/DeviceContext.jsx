@@ -11,7 +11,7 @@ export const DeviceContext = createContext(null);
  * @param {Array} data 
  * @returns array of functional devices
  */
-export const validateDevices = (data) => {
+const validateDevices = (data) => {
     const devices = [];
     // if data is not array, return.
     if (!Array.isArray(data)) {
@@ -66,6 +66,7 @@ export function DeviceProvider({ children }) {
     const [groups, setGroups] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [updateData, setUpdateData] = useState(0);
 
     const api = useApi();
 
@@ -75,13 +76,11 @@ export function DeviceProvider({ children }) {
             const res = await api('/api/groups');
             if (!res.ok) throw new Error('Failed to fetch groups');
             const data = await res.json();
-            console.log(data.groups);
+            console.log("data", data);
             setGroups(data.groups);
 
-            console.log(data.devices);
             const validatedDevices = {};
             for (const [groupId, list] of Object.entries(data.devices)) {
-                console.log(list);
                 const validatedList = validateDevices(list).sort((a, b) => {
                     if (a.active && !b.active) return -1;
                     if (!a.active && b.active) return 1;
@@ -99,7 +98,7 @@ export function DeviceProvider({ children }) {
     
     useEffect(() => {
         fetchGroupsAndDevices();
-    }, [lastEvent, user]);
+    }, [lastEvent, user, updateData]);
 
     useEffect(() => {
         if (!user) {
@@ -108,7 +107,10 @@ export function DeviceProvider({ children }) {
         }
     }, [user]);
 
-    //TODO: Refactor these.
+    const update = () => {
+        setUpdateData(prev => prev + 1);
+    };
+
     const addDevice = (groupId, device) => {
         setDevices(prevDevices => ({...prevDevices, [groupId]: [...prevDevices[groupId], device]}));
     };
@@ -152,7 +154,7 @@ export function DeviceProvider({ children }) {
     };
 
   return (
-    <DeviceContext.Provider value={{ devices, groups, loading, error, removeDevice, changeDeviceName, getDeviceFunctionState }}>
+    <DeviceContext.Provider value={{ devices, groups, loading, error, removeDevice, changeDeviceName, getDeviceFunctionState, update }}>
       {children}
     </DeviceContext.Provider>
   );

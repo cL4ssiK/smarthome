@@ -1,0 +1,115 @@
+header {
+    text-align: center;
+}
+
+p {
+    color: var(--features);
+    font-size: x-large;
+    font-weight: bold;
+}
+
+h3 {
+    color: var(--features);
+    font-size: xx-large;
+    font-weight: bolder;
+}
+
+.commonBox {
+    margin: 2em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    border: 2px var(--features) solid; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    position: relative;
+}
+
+.deviceDiv {
+    display: flex;
+    justify-content: center;
+}
+
+.deviceCardfuncOn{
+    border-right: 2px var(--features) dashed;
+    margin-right: 0;
+    min-width: 300px;
+    max-width: 300px;
+}
+
+.deviceCardfuncOff {
+    min-width: 300px;
+    max-width: 300px;
+}
+
+.functionlistOn{
+    margin-left: 0;
+    border-left: 0;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    min-width: 300px;
+    /*max-width: 300px;*/
+    min-height: 200px;
+}
+
+.functionlistOff{
+    margin: 0;
+    border: 0;
+}
+
+.removeButton {
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 50%;
+    background-color: var(--features);
+    line-height: 0;
+
+    font-size: large;
+    font-weight: bold;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /**position: absolute;
+    top: 5px;
+    right: 5px;*/
+    cursor: pointer;
+    color: var(--bg-primary);
+    z-index: 3;
+}
+
+.coffeemakerIMG {
+    color: var(--features);
+    height: 200px;
+    transform: scale(1.6);
+}
+
+.firstRow {
+    margin-top: 1em;
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    z-index: 2;
+}
+
+.firstRow::before {
+    content: "";
+    flex: 1; /* Takes up equal space as the right side */
+}
+
+.firstRow h3 {
+    margin: 0;
+    flex: 0 0 auto; /* Don't grow, don't shrink */
+    text-align: center;
+}
+
+.rightSection {
+    flex: 1; /* Takes up equal space as the left spacer */
+    display: flex;
+    justify-content: center; /* Centers the X in the "leftover" space */
+}

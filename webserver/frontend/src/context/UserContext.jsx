@@ -10,6 +10,7 @@ export function UserProvider({ children }) {
         const fetchUser = async () => {
             try {
                 const res = await fetch('/api/refresh', {
+                    method: 'POST',
                     credentials: 'include',
                 });
                 if (res.ok) {

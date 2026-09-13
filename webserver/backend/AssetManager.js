@@ -149,6 +149,47 @@ export class AssetManager {
         return await this.groups.newGroup(name, user);
     }
 
+
+    async addNewUserToGroup(data) {
+        const user = data.user;
+        const groupId = data.groupId;
+        const addUser =  data.addUser;
+
+        if (!user || !groupId || !addUser) return 'Nullish input field.';
+
+        const usersRole = await this.groups.getUsersRoleInGroup(user, groupId);
+
+        if (usersRole !== "owner") return 'User does not have permission to perform this operation.';
+
+        const newUser = await Users.getUser(addUser);
+
+        if (!newUser) return 'User ' + addUser + ' does not exist.' 
+
+        const success = this.groups.addUserToGroup(newUser.id, groupId, 'user');
+
+        return success;
+    }
+
+    async removeUserFromGroup(data) {
+        const user = data.user;
+        const groupId = data.groupId;
+        const rmUser =  data.rmUser;
+
+        if (!user || !groupId || !rmUser) return 'Nullish input field.';
+
+        const usersRole = await this.groups.getUsersRoleInGroup(user, groupId);
+
+        if (usersRole !== "owner") return 'User does not have permission to perform this operation.';
+
+        const removedUser = await Users.getUser(rmUser);
+
+        if (!removedUser) return 'User ' + rmUser + ' does not exist.' 
+
+        const success = this.groups.removeUserFromGroup(removedUser.id, groupId);
+
+        return success;
+    }
+
     /**
      * Function for requesting all devices formatted for frontend.
      * @returns array of Device objects in slightly differend format.
