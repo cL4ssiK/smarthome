@@ -59,6 +59,7 @@ function GroupList() {
         if (response.status) {
             console.log("success");
             update();
+            setNewUser(false);
         }
     }
 

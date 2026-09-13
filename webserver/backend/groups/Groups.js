@@ -52,8 +52,13 @@ export class Groups {
     }
 
     async getUsersRoleInGroup(user, groupId) {
-        return (await prisma.userGroup.findFirst({
-            where: {userId: user.userId, groupId : groupId}
+        return (await prisma.userGroup.findUnique({
+            where: {
+                    userId_groupId: {
+                        userId: Number(user.id),
+                        groupId: Number(groupId),
+                    },
+                }
         }))?.role;
     }
     
@@ -86,10 +91,9 @@ export class Groups {
         return errorMsg;
     }
 
-    async removeUserFromGroup(userId, groupId) {
+    async removeUserFromGroup(userId, groupId, role) {
         let errorMsg = '';
-        console.log("userId", userId);
-        console.log("groupId", groupId);
+
         try {
             await prisma.userGroup.delete({
                 where: {
@@ -108,9 +112,8 @@ export class Groups {
                 groupId: Number(groupId),
             }
         });
-        console.log(anyUsersInGroup);
 
-        if (!anyUsersInGroup) {
+        if (!anyUsersInGroup || role === 'owner') {
             try {
                 await prisma.group.delete({
                     where: {

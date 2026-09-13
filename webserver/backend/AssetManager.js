@@ -152,6 +152,10 @@ export class AssetManager {
 
     async addNewUserToGroup(data) {
         const user = data.user;
+        //TODO: FIX THE MISMATCH BETWEEN DB USER AND FRONTEND USER!
+        user.id = user.userId;
+        delete user.userId;
+
         const groupId = data.groupId;
         const addUser =  data.addUser;
 
@@ -170,22 +174,28 @@ export class AssetManager {
         return success;
     }
 
+    //TODO: removedUserRole ja UserRole samaan hakuun.
     async removeUserFromGroup(data) {
         const user = data.user;
+        //TODO: FIX THE MISMATCH BETWEEN DB USER AND FRONTEND USER!
+        user.id = user.userId;
+        delete user.userId;
+        
         const groupId = data.groupId;
         const rmUser =  data.rmUser;
 
         if (!user || !groupId || !rmUser) return 'Nullish input field.';
 
         const usersRole = await this.groups.getUsersRoleInGroup(user, groupId);
-
-        if (usersRole !== "owner") return 'User does not have permission to perform this operation.';
-
         const removedUser = await Users.getUser(rmUser);
-
+        
+        if (!(usersRole === "owner" || user.id === removedUser.id)) return 'User does not have permission to perform this operation.';
+        
         if (!removedUser) return 'User ' + rmUser + ' does not exist.' 
-
-        const success = this.groups.removeUserFromGroup(removedUser.id, groupId);
+        
+        const removedUsersRole = await this.groups.getUsersRoleInGroup(removedUser, groupId);
+        
+        const success = this.groups.removeUserFromGroup(removedUser.id, groupId, removedUsersRole);
 
         return success;
     }
