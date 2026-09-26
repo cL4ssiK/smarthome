@@ -1,4 +1,3 @@
-import { tryCatch } from "bullmq";
 import prisma from "../database/prisma.js";
 
 export class Groups {
@@ -44,6 +43,7 @@ export class Groups {
         return groups.map(elem => ({
             groupId: elem.id,
             name: elem.name,
+            owner: elem.users.find(u => u.role === "owner")?.user?.username ?? null,
             users: elem.users.map(elem2 => ({
                 username: elem2.user.username,
                 role: elem2.role 
