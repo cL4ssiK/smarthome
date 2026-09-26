@@ -15,7 +15,7 @@ function GroupList() {
 
     const [openGroups, setOpenGroups] = useState([]);
 
-    const [newUser, setNewUser] = useState(false);
+    const [newUser, setNewUser] = useState({state: false, groupFeId: 0});
     const [newUserName, setNewUserName] = useState("");
 
     const api = useApi();
@@ -59,8 +59,19 @@ function GroupList() {
         if (response.status) {
             console.log("success");
             update();
-            setNewUser(false);
+            setNewUser({state: false, groupFeId: 0});
         }
+    }
+
+    function showRemoveButton(groupUser, groupOwner) {
+        if (groupUser.username == user.username || groupOwner == user.username) {
+            return 'X';
+        }
+        return '';
+    }
+    
+    function showAddButton(groupUser) {
+        return (groupUser.username == user.username && groupUser.role == "owner")
     }
 
     if (loading) {
@@ -85,14 +96,14 @@ function GroupList() {
                     {
                         openGroups.find(elem => elem.groupId == group.groupId)?.toggled && (
                         <>
-                            {group.users.map((groupUser, i) => (<TextAndButton
+                            {group.users.map((groupUser, i) => <TextAndButton
                                 key={i}
-                                symbol={'X'}
+                                symbol={showRemoveButton(groupUser, group.owner)}
                                 text={groupUser.username}
-                                handleBtonClick={() => removeUserFromGroup(groupUser.username, group.groupId)}></TextAndButton>)
+                                handleBtonClick={() => removeUserFromGroup(groupUser.username, group.groupId)}></TextAndButton>
                             )}
                             {
-                            newUser ? 
+                            group.owner === user.username ? ((newUser.state && newUser.groupFeId === i) ? 
                             <div>
                                 <label>
                                     user name
@@ -100,13 +111,19 @@ function GroupList() {
                                     ></input>
                                 </label>
                                 <button onClick={(e) => addUserToGroup(newUserName, group.groupId)}>Confirm</button>
-                                <button onClick={() => setNewUser(false)}>Cancel</button>
+                                <button onClick={() => {
+                                        setNewUserName("");
+                                        setNewUser({state: false, groupFeId: i});
+                                    }}>Cancel</button>
                             </div>
                             : <TextAndButton
                                 symbol={'+'}
                                 text=""
-                                handleBtonClick={() => setNewUser(true)}>
-                            </TextAndButton> 
+                                handleBtonClick={() => {
+                                        setNewUserName("");
+                                        setNewUser({state: true, groupFeId: i});
+                                    }}>
+                            </TextAndButton> ) : null
                             }
                         </>)
                     }

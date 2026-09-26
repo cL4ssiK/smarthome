@@ -9,9 +9,10 @@ function TextAndButton({ as: Component='h3', symbol, text, value="", handleBtonC
                 {text}
             </Component>
             <div className={styles.rightSection}>
-                <span className={styles.removeButton}
+                {symbol && <span className={styles.removeButton}
                     data-value={value}
                     onClick={handleBtonClick}>{symbol}</span>
+                }
             </div>
         </div>           
     );

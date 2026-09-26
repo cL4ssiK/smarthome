@@ -16,6 +16,7 @@ function NewGroup({ setCreateNewGroup }) {
         const group = await (await api('/api/newgroup', { method: "POST", body: JSON.stringify({group:{name: groupName}}) })).json();
         setGroupName("");
         update();
+        setCreateNewGroup(false);
     }
     
     return (
