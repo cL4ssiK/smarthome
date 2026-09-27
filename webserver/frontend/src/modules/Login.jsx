@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { UserContext } from "../context/UserContext";
 import { useLogout } from "../utils/authentication";
+import styles from "./Login.module.css";
 
 function Login() {
 
@@ -75,32 +76,48 @@ function Login() {
     };
     
     return (
-        <div>
+        <div className={styles.div}>
             { !userContext.user ? (
-            <div>
-                <input
-                    name="username" 
-                    onChange={handleChange}>
-                </input>
-                <input
-                    name="pswd1" 
-                    type="password"
-                    onChange={handleChange}>
-                </input>
+            <>
+            <div className={styles.innerDiv}>
+                <label>
+                    username
+                    <input
+                        className={`${styles.input} ${logIn ? styles.shortInput : ""}`}
+                        name="username"
+                        onChange={handleChange}>
+                    </input>
+                </label>
+                <label>
+                    password
+                    <input
+                        className={`${styles.input} ${logIn ? styles.shortInput : ""}`}
+                        name="pswd1"
+                        type="password"
+                        onChange={handleChange}>
+                    </input>
+                </label>
                 {logIn && (
-                <input
-                    name="pswd2" 
-                    type="password"
-                    onChange={handleChange}>
-                </input>
+                <label>
+                    re-type password
+                    <input
+                        className={styles.input}
+                        name="pswd2"
+                        type="password"
+                        onChange={handleChange}>
+                    </input>
+                </label>
                 )}
-                <button onClick={e => logIn ? register() : login()}>{logIn ? "register" : "login"}</button>
-            </div> ) : (<button onClick={e => logout()}>Logout</button>) }
+            </div>
+            <button onClick={e => logIn ? register() : login()}>{logIn ? "register" : "login"}</button>
+            </>
+            ) : (<button onClick={e => logout()}>Logout</button>) }
             {
                 userContext.user ? "" :
-                <input type="checkbox"
-                        onChange={e => {setLogIn(e.target.checked);}}>
-                </input>}
+                <label onClick={e => setLogIn(!logIn)}>
+                    {logIn ? "log in" : "no account?"}
+                </label>
+            }
         </div>
     );
 
