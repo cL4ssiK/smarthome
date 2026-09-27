@@ -63,4 +63,22 @@ function InputTextButton({ symbol, text, value="", handleBtonClick, device_id=""
     );
 }
 
-export { InputTextButton };
+function InputTextButtons({ text, onChange, bton1Func, bton2Func, bton1Text="Confirm", bton2Text="Cancel", orientation="over"}) {
+    let outerDivStyle = null;
+    if (orientation === "over") outerDivStyle = styles.outerDivOver
+    else if (orientation === "side") outerDivStyle = styles.outerDivSide
+    return (
+        <div className={`${styles.outerDiv} ${outerDivStyle}`}>
+            <input className={`${styles.input} ${styles.inputOverButtons} ${orientation == "side" ? styles.inputSide : ""}`}
+                onChange={(e) => onChange(e.target.value)}
+                placeholder={text}
+            ></input>
+            <div>
+                <button className={styles.btonLeft} onClick={() => bton1Func()}>{bton1Text}</button>
+                <button className={styles.btonRight} onClick={() => bton2Func(false)}>{bton2Text}</button>
+            </div>
+        </div>
+    );
+}
+
+export { InputTextButton, InputTextButtons };

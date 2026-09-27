@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { DeviceContext } from "../context/DeviceContext";
 import { useApi } from "../utils/useApi";
+import { InputTextButtons } from "./InputTextButton";
 
 
 function NewGroup({ setCreateNewGroup }) {
@@ -21,13 +22,13 @@ function NewGroup({ setCreateNewGroup }) {
     
     return (
         <div>
-            <label>
-                group name
-                <input onChange={(e) => setGroupName(e.target.value)}
-                ></input>
-            </label>
-            <button onClick={() => createNewGroup()}>Confirm</button>
-            <button onClick={() => setCreateNewGroup(false)}>Cancel</button>
+            <InputTextButtons
+                text="Group name"
+                onChange={setGroupName}
+                bton1Func={() => createNewGroup()}
+                bton2Func={() => setCreateNewGroup(false)}
+                orientation="side"
+            ></InputTextButtons>
         </div>
     );
 }

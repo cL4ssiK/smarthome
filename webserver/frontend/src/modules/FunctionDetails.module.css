@@ -75,3 +75,7 @@
   background: var(--features);
   color: var(--bg-primary);
 }
+
+.btonLeft {
+    margin-right: 5px;
+}

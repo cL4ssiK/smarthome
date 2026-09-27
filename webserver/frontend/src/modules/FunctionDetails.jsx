@@ -87,6 +87,7 @@ function FunctionDetails({ func, device, handleReturnBtonClick }) {
                     }
                     <div className={styles.timerButtonsDiv}>
                         <button
+                            className={styles.btonLeft}
                             value={"on"}
                             onClick={e => handleTimerClick(e.target.value)}>ACTIVATE</button>
                         <button

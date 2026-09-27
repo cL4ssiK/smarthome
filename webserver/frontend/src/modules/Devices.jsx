@@ -4,6 +4,7 @@ import { TextAndButton } from "./TextAndButton";
 import { UserContext } from "../context/UserContext";
 import { DeviceContext } from "../context/DeviceContext";
 import { DeviceList } from "./DeviceList";
+import styles from "./Devices.module.css";
 
 
 
@@ -34,6 +35,7 @@ function Devices() {
                 setView={setActiveGroupAndDevices}
                 elements={groups.map(group => group.name)}
             ></SubHeader>
+            <div className={styles.outerDiv}>
             {
                 createNewDevice ? <p>new device if here</p> :
                 (
@@ -44,7 +46,9 @@ function Devices() {
                 )
             }
             <DeviceList 
-                group={activeGroup}></DeviceList>
+                group={activeGroup}>
+            </DeviceList>
+            </div>
         </div>
     );
 }

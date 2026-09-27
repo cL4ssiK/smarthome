@@ -69,3 +69,34 @@
     color: var(--bg-primary);
     z-index: 3;
 }
+
+.outerDiv {
+    display: flex;
+    align-items: center;
+}
+
+.outerDivOver {
+    flex-direction: column;
+}
+
+.outerDivSide {
+    flex-direction: row;
+}
+
+.inputOverButtons {
+    field-sizing: content;
+    text-transform: unset; 
+}
+
+.inputSide {
+    margin-right: 0.5em;
+}
+
+.btonLeft {
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+.btonRight {
+    margin-right: 5px;
+}

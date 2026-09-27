@@ -2,7 +2,7 @@ import { useContext, useState, useEffect } from "react";
 import { DeviceContext } from "../context/DeviceContext";
 import { WebSocketContext } from "../context/WebSocketContext";
 import { DeviceFunctionsForm } from "./deviceFunctionsForm";
-import { InputTextButton } from "./InputTextButton";
+import { InputTextButtons } from "./InputTextButton";
 import { useApi } from '../utils/useApi';
 import styles from "./GroupList.module.css";
 import { ReactComponent as CoffeemakerIMG } from "../images/coffeemakerFallout4.svg";
@@ -104,18 +104,15 @@ function GroupList() {
                             )}
                             {
                             group.owner === user.username ? ((newUser.state && newUser.groupFeId === i) ? 
-                            <div>
-                                <label>
-                                    user name
-                                    <input onChange={(e) => setNewUserName(e.target.value)}
-                                    ></input>
-                                </label>
-                                <button onClick={(e) => addUserToGroup(newUserName, group.groupId)}>Confirm</button>
-                                <button onClick={() => {
+                                <InputTextButtons
+                                    text="username"
+                                    onChange={setNewUserName}
+                                    bton1Func={() => addUserToGroup(newUserName, group.groupId)}
+                                    bton2Func={() => {
                                         setNewUserName("");
                                         setNewUser({state: false, groupFeId: i});
-                                    }}>Cancel</button>
-                            </div>
+                                    }}
+                                ></InputTextButtons>
                             : <TextAndButton
                                 symbol={'+'}
                                 text=""
